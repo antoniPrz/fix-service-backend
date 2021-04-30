@@ -113,11 +113,11 @@ def get_comunas():
         return jsonify(comunas.serialize_all_fields()), 200
 
     if request.method == "GET":
-        comuna = Comunas.query.all()
-        comuna = list(map(lambda comuna: comuna.serialize_strict(), comunas))
+        comunas = Comunas.query.all()
+        comunas = list(map(lambda comuna: comuna.serialize_strict(), comunas))
         return jsonify(comunas), 200
 
-        
+
 
 if __name__ == "__main__":
     manager.run()
