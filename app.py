@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Servicios, Perfil, Solicitudes, Comunas
+from models import db, Services, Profile, Communes
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
@@ -54,7 +54,7 @@ def get_profile():
         profile.Id_Profile = request.json.get("Id_Profile")
         profile.Rut = request.json.get("Rut")
         profile.Rol = request.json.get("Rol")
-        profile.Names = request.json.get("Names")
+        profile.Full_Name = request.json.get("Full_Name")
         profile.Last_Name = request.json.get("Last_Name")
         profile.Phone = request.json.get("Phone")
         profile.Address = request.json.get("Address")

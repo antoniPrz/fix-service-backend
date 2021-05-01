@@ -26,7 +26,7 @@ class Profile(db.Model):
     Id_Profile = db.Column(db.Integer, primary_key=True)
     Rut = db.Column(db.Integer, primary_key=True)
     Rol = db.Column(db.String(15), nullable=False)
-    Names = db.Column(db.String(60), nullable=False)
+    Full_Name = db.Column(db.String(60), nullable=False)
     Last_Name = db.Column(db.String(90), nullable=False)
     Phone = db.Column(db.Integer, nullable=False)
     Address = db.Column(db.String(150), nullable=False)
@@ -45,7 +45,7 @@ class Profile(db.Model):
         "Id_Profile": self.Id_Profile,
         "Rut":self.Rut,  
         "Rol": self.Rol,
-        "Names":self.Names,  
+        "Full_Name":self.Full_Name,  
         "Last_Name": self.Last_Name,
         "Phone":self.Phone,  
         "Address": self.Address,
