@@ -32,92 +32,65 @@ bcrypt = Bcrypt(app)
 def main():
     return render_template('index.html')
 
-@app.route("/servicio", methods=["GET", "POST"])
-def get_servicios():
+@app.route("/service", methods=["GET", "POST"])
+def get_services():
     if request.method == "POST":
-        servicio = Servicios()
-        servicio.Id_Servicio = request.json.get("Id_Servicio")
-        servicio.Nombre_Servicio = request.json.get("Nombre_Servicio")
-        db.session.add(servicio)
+        service = Services()
+        service.Id_Service = request.json.get("Id_Service")
+        service.Name_Service = request.json.get("Name_Service")
+        db.session.add(service)
         db.session.commit()
-        return jsonify(servicio.serialize_all_fields()), 200
+        return jsonify(service.serialize_all_fields()), 200
 
     if request.method == "GET":
-        servicios = Servicios.query.all()
-        servicios = list(map(lambda servicio: servicio.serialize_strict(), servicios))
-        return jsonify(servicios), 200
+        services = Services.query.all()
+        services = list(map(lambda service: service.serialize_strict(), services))
+        return jsonify(services), 200
 
-@app.route("/perfil", methods=["GET", "POST"])
-def get_perfil():
+@app.route("/profile", methods=["GET", "POST"])
+def get_profile():
     if request.method == "POST":
-        perfil = Perfil()
-        perfil.Id_Perfil = request.json.get("Id_Perfil")
-        perfil.Rut = request.json.get("Rut")
-        perfil.Rol = request.json.get("Rol")
-        perfil.Nombres = request.json.get("Nombres")
-        perfil.Apellidos = request.json.get("Apellidos")
-        perfil.Telefono = request.json.get("Telefono")
-        perfil.Direccion = request.json.get("Direccion")
-        perfil.Pregunta = request.json.get("Pregunta")
-        perfil.Respuesta = request.json.get("Respuesta")
-        perfil.Id_Comuna = request.json.get("Id_Comuna")
-        perfil.Comunas_Atencion = request.json.get("Comunas_Atencion")
-        perfil.Experiencia = request.json.get("Experiencia")
+        profile = Profile()
+        profile.Id_Profile = request.json.get("Id_Profile")
+        profile.Rut = request.json.get("Rut")
+        profile.Rol = request.json.get("Rol")
+        profile.Names = request.json.get("Names")
+        profile.Last_Name = request.json.get("Last_Name")
+        profile.Phone = request.json.get("Phone")
+        profile.Address = request.json.get("Address")
+        profile.Question = request.json.get("Question")
+        profile.Answer = request.json.get("Answer")
+        profile.Id_Commune = request.json.get("Id_Commune")
+        profile.Attention_Communes = request.json.get("Attention_Communes")
+        profile.Experience = request.json.get("Experience")
 
-        db.session.add(perfil)
+        db.session.add(profile)
         db.session.commit()
-        return jsonify(perfil.serialize_all_fields()), 200
+        return jsonify(profile.serialize_all_fields()), 200
 
     if request.method == "GET":
-        perfiles = Perfil.query.all()
-        perfiles = list(map(lambda perfil: perfil.serialize_strict(), perfiles))
-        return jsonify(perfiles), 200
+        profiles = Profile.query.all()
+        profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
+        return jsonify(profiles), 200
 
 
-@app.route("/solicitudes", methods=["GET", "POST"])
-def get_solicitudes():
+@app.route("/communes", methods=["GET", "POST"])
+def get_communes():
     if request.method == "POST":
-        solicitudes = Solicitudes()
-        solicitudes.Id_Solicitud = request.json.get("Id_Solicitud")
-        solicitudes.Id_Servicio = request.json.get("Id_Servicio")
-        solicitudes.Id_Perfil = request.json.get("Id_Perfil")
-        solicitudes.id_Comuna = request.json.get("id_Comuna")
-        solicitudes.Estado_Solicitud = request.json.get("Estado_Solicitud")        
-        solicitudes.Nombres = request.json.get("Nombres")
-        solicitudes.Apellidos = request.json.get("Apellidos")
-        solicitudes.Telefono_Contacto = request.json.get("Telefono_Contacto")
-        solicitudes.Direccion = request.json.get("Direccion")
-        solicitudes.Calificacion = request.json.get("Calificacion")
-        solicitudes.Fecha = request.json.get("Fecha")
-        solicitudes.Hora = request.json.get("Hora")
-
-        db.session.add(solicitudes)
+        communes = Communes()
+        communes.Id_Region = request.json.get("Id_Region")
+        communes.Id_Commune = request.json.get("Id_Commune")
+        communes.Name_Commune = request.json.get("Name_Commune")
+        db.session.add(communes)
         db.session.commit()
-        return jsonify(solicitudes.serialize_all_fields()), 200
+        return jsonify(communes.serialize_all_fields()), 200
 
     if request.method == "GET":
-        solicitud = Solicitudes.query.all()
-        solicitud = list(map(lambda solicitud: solicitud.serialize_strict(), solicitudes))
-        return jsonify(solicitudes), 200
+        communes = Communes.query.all()
+        communes = list(map(lambda commune: commune.serialize_strict(), communes))
+        return jsonify(communes), 200
 
 
-@app.route("/comunas", methods=["GET", "POST"])
-def get_comunas():
-    if request.method == "POST":
-        comunas = Comunas()
-        comunas.Id_Region = request.json.get("Id_Region")
-        comunas.Id_Comuna = request.json.get("Id_Comuna")
-        comunas.Nombre_Comuna = request.json.get("Nombre_Comuna")
-        db.session.add(comunas)
-        db.session.commit()
-        return jsonify(comunas.serialize_all_fields()), 200
-
-    if request.method == "GET":
-        comuna = Comunas.query.all()
-        comuna = list(map(lambda comuna: comuna.serialize_strict(), comunas))
-        return jsonify(comunas), 200
-
-        
 
 if __name__ == "__main__":
     manager.run()
