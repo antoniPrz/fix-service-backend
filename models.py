@@ -84,3 +84,25 @@ class Communes(db.Model):
         "Id_Region": self.Id_Region,
         "Id_Commune":self.Id_Commune
         }
+
+class Availability(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.date)
+    hora = db.Column(db.date)
+
+    def __repr__(self):
+        return "<Availability %r>" % self.id
+
+    def serialize_all_fields(self):
+        return {
+            "id": self.id,
+            "fecha":self.fecha,
+            "hora":self.hora
+        }
+
+    def serialize_strict(self):
+        return {
+            "id": self.id,
+            "fecha":self.fecha,
+            "hora":self.hora
+        }
