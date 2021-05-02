@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
+from datetime import datetime
+
 db = SQLAlchemy()
 
 class Services(db.Model):
@@ -86,23 +88,25 @@ class Communes(db.Model):
         }
 
 class Availability(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.date)
-    hora = db.Column(db.date)
+    Id_Profile = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
+    hora = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
 
     def __repr__(self):
         return "<Availability %r>" % self.id
 
     def serialize_all_fields(self):
         return {
-            "id": self.id,
+            "Id_Profile": self.Id_Profile,
             "fecha":self.fecha,
             "hora":self.hora
         }
 
     def serialize_strict(self):
         return {
-            "id": self.id,
+            "Id_Profile": self.Id_Profile,
             "fecha":self.fecha,
             "hora":self.hora
         }
