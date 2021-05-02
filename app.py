@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Services, Profile, Communes
+from models import db, Services, Profile, Communes, Availability
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
@@ -90,7 +90,21 @@ def get_communes():
         communes = list(map(lambda commune: commune.serialize_strict(), communes))
         return jsonify(communes), 200
 
+@app.route("/availability", methods=["GET", "POST"])
+def get_availability():
+    if request.method == "POST":
+        availability = Availability()
+        availability.fecha = request.json.get("fecha")
+        availability.hora = request.json.get("hora")
+        
+        db.session.add(availability)
+        db.session.commit()
+        return jsonify(availability.serialize_all_fields()), 200
 
+    if request.method == "GET":
+        availabilities = Availability.query.all()
+        availabilities = list(map(lambda availability: availability.serialize_strict(), availabilities))
+        return jsonify(availabilities), 200
 
 if __name__ == "__main__":
     manager.run()
