@@ -94,7 +94,7 @@ def get_communes():
 def get_availability():
     if request.method == "POST":
         availability = Availability()
-        availability.Id_Profile = request.json.get("Id_Profile")
+        availability.Id = request.json.get("Id")
         availability.fecha = request.json.get("fecha")
         availability.hora = request.json.get("hora")
         
