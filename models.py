@@ -65,7 +65,7 @@ class Profile(db.Model):
 
 
 class Communes(db.Model):
-    Id_Region = db.Column(db.Integer, nullable=False)
+    Name_Region = db.Column(db.String(100), nullable=False)
     Id_Commune = db.Column(db.Integer, primary_key=True)
     Name_Commune = db.Column(db.String(150), nullable=False)
 
@@ -74,13 +74,51 @@ class Communes(db.Model):
 
     def serialize_all_fields(self):
         return {
-        "Id_Region": self.Id_Region,
+        "Name_Region": self.Name_Region,
         "Id_Commune":self.Id_Commune,
         "Name_Commune":self.Name_Commune  
         }
 
     def serialize_strict(self):
         return {
-        "Id_Region": self.Id_Region,
+        "Name_Region": self.Name_Region,
         "Id_Commune":self.Id_Commune
         }
+
+
+class Availability(db.Model):
+    Id_Profile = db.Column(db.Integer, primary_key=True)
+    #Year = db.Column(db.datetime.)
+    #Month = db.Column(db.Date)
+    #Day = db.Column(db.Date)
+    #Hour = db.Column(db.Time)
+    #Minute = db.Column(db.Time)
+    #Second = db.Column(db.Time)
+    Date = db.Column(db.String(10), nullable=False) #default=db.func.current_timestamp())
+    Hour = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        return "<Availability %r>" % self.Id_Profile
+
+    def serialize_all_fields(self):
+        return {
+        "Id_Profile": self.Id_Profile,
+        #"Year":self.Year,
+        #"Month":self.Month, 
+        #"Day":self.Day,
+        #"Hour":self.Hour,
+        #"Minute":self.Minute,
+        #"Second":self.Second                 
+        "Date": self.Date,
+        "Hour":self.Hour  
+        }
+
+    def serialize_strict(self):
+        return {
+        "Id_Profile": self.Id_Profile,
+        "Date": self.Date
+        }
+
+
+
+
