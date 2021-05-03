@@ -87,23 +87,6 @@ class Communes(db.Model):
         "Id_Commune":self.Id_Commune
         }
 
-<<<<<<< HEAD
-class Availability(db.Model):
-    Id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False,
-        default=datetime.utcnow)
-    time = db.Column(db.DateTime, nullable=False,
-        default=datetime.utcnow)
-
-    def __repr__(self):
-        return "<Availability %r>" % self.Id
-
-    def serialize_all_fields(self):
-        return {
-            "Id": self.Id,
-            "date":self.date,
-            "time":self.time
-=======
 
 class Availability(db.Model):
     Id_Profile = db.Column(db.Integer, primary_key=True)
@@ -130,17 +113,10 @@ class Availability(db.Model):
         #"Second":self.Second                 
         "Date": self.Date,
         "Hour":self.Hour  
->>>>>>> aron
         }
 
     def serialize_strict(self):
         return {
-<<<<<<< HEAD
-            "Id": self.Id,
-            "date":self.date,
-            "time":self.time
-        }
-=======
         "Id_Profile": self.Id_Profile,
         "Date": self.Date
         }
@@ -148,4 +124,3 @@ class Availability(db.Model):
 
 
 
->>>>>>> aron

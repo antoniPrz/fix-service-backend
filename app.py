@@ -94,15 +94,6 @@ def get_communes():
 def get_availability():
     if request.method == "POST":
         availability = Availability()
-<<<<<<< HEAD
-        availability.Id = request.json.get("Id")
-        availability.date = request.json.get("date")
-        availability.time = request.json.get("time")
-        
-        db.session.add(availability)
-        db.session.commit()
-        return jsonify(availability.serialize_all_fields()), 200
-=======
         availability.Id_Profile = request.json.get("Id_Profile")
         #availability.Year = request.json.get("Year")
         #availability.Month = request.json.get("Month")
@@ -120,7 +111,6 @@ def get_availability():
         availabilitys = Availability.query.all()
         availabilitys = list(map(lambda availability: availability.serialize_strict(), availabilitys))
         return jsonify(availabilitys), 200
->>>>>>> aron
 
     if request.method == "GET":
         availabilities = Availability.query.all()
