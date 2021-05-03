@@ -89,9 +89,9 @@ class Communes(db.Model):
 
 class Availability(db.Model):
     Id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.DateTime, nullable=False,
+    date = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
-    hora = db.Column(db.DateTime, nullable=False,
+    time = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
 
     def __repr__(self):
@@ -100,13 +100,13 @@ class Availability(db.Model):
     def serialize_all_fields(self):
         return {
             "Id": self.Id,
-            "fecha":self.fecha,
-            "hora":self.hora
+            "date":self.date,
+            "time":self.time
         }
 
     def serialize_strict(self):
         return {
             "Id": self.Id,
-            "fecha":self.fecha,
-            "hora":self.hora
+            "date":self.date,
+            "time":self.time
         }

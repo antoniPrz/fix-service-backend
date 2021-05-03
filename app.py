@@ -95,8 +95,8 @@ def get_availability():
     if request.method == "POST":
         availability = Availability()
         availability.Id = request.json.get("Id")
-        availability.fecha = request.json.get("fecha")
-        availability.hora = request.json.get("hora")
+        availability.date = request.json.get("date")
+        availability.time = request.json.get("time")
         
         db.session.add(availability)
         db.session.commit()
