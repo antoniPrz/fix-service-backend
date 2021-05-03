@@ -67,7 +67,7 @@ class Profile(db.Model):
 
 
 class Communes(db.Model):
-    Id_Region = db.Column(db.Integer, nullable=False)
+    Name_Region = db.Column(db.String(100), nullable=False)
     Id_Commune = db.Column(db.Integer, primary_key=True)
     Name_Commune = db.Column(db.String(150), nullable=False)
 
@@ -76,17 +76,18 @@ class Communes(db.Model):
 
     def serialize_all_fields(self):
         return {
-        "Id_Region": self.Id_Region,
+        "Name_Region": self.Name_Region,
         "Id_Commune":self.Id_Commune,
         "Name_Commune":self.Name_Commune  
         }
 
     def serialize_strict(self):
         return {
-        "Id_Region": self.Id_Region,
+        "Name_Region": self.Name_Region,
         "Id_Commune":self.Id_Commune
         }
 
+<<<<<<< HEAD
 class Availability(db.Model):
     Id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False,
@@ -102,11 +103,49 @@ class Availability(db.Model):
             "Id": self.Id,
             "date":self.date,
             "time":self.time
+=======
+
+class Availability(db.Model):
+    Id_Profile = db.Column(db.Integer, primary_key=True)
+    #Year = db.Column(db.datetime.)
+    #Month = db.Column(db.Date)
+    #Day = db.Column(db.Date)
+    #Hour = db.Column(db.Time)
+    #Minute = db.Column(db.Time)
+    #Second = db.Column(db.Time)
+    Date = db.Column(db.String(10), nullable=False) #default=db.func.current_timestamp())
+    Hour = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        return "<Availability %r>" % self.Id_Profile
+
+    def serialize_all_fields(self):
+        return {
+        "Id_Profile": self.Id_Profile,
+        #"Year":self.Year,
+        #"Month":self.Month, 
+        #"Day":self.Day,
+        #"Hour":self.Hour,
+        #"Minute":self.Minute,
+        #"Second":self.Second                 
+        "Date": self.Date,
+        "Hour":self.Hour  
+>>>>>>> aron
         }
 
     def serialize_strict(self):
         return {
+<<<<<<< HEAD
             "Id": self.Id,
             "date":self.date,
             "time":self.time
         }
+=======
+        "Id_Profile": self.Id_Profile,
+        "Date": self.Date
+        }
+
+
+
+
+>>>>>>> aron

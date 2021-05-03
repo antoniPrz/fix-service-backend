@@ -6,6 +6,7 @@ from flask_script import Manager
 from flask_cors import CORS
 from models import db, Services, Profile, Communes, Availability
 from flask_bcrypt import Bcrypt
+from datetime import date, datetime, time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
 
@@ -73,12 +74,11 @@ def get_profile():
         profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
         return jsonify(profiles), 200
 
-
 @app.route("/communes", methods=["GET", "POST"])
 def get_communes():
     if request.method == "POST":
         communes = Communes()
-        communes.Id_Region = request.json.get("Id_Region")
+        communes.Name_Region = request.json.get("Name_Region")
         communes.Id_Commune = request.json.get("Id_Commune")
         communes.Name_Commune = request.json.get("Name_Commune")
         db.session.add(communes)
@@ -94,6 +94,7 @@ def get_communes():
 def get_availability():
     if request.method == "POST":
         availability = Availability()
+<<<<<<< HEAD
         availability.Id = request.json.get("Id")
         availability.date = request.json.get("date")
         availability.time = request.json.get("time")
@@ -101,6 +102,25 @@ def get_availability():
         db.session.add(availability)
         db.session.commit()
         return jsonify(availability.serialize_all_fields()), 200
+=======
+        availability.Id_Profile = request.json.get("Id_Profile")
+        #availability.Year = request.json.get("Year")
+        #availability.Month = request.json.get("Month")
+        #availability.Day = request.json.get("Day")
+        #availability.Hour = request.json.get("Hour")
+        #availability.Minute = request.json.get("Minute")
+        #availability.Second = request.json.get("Second")                
+        availability.Date = request.json.get("Date")
+        availability.Hour = request.json.get("Hour")
+        db.session.add(availability)
+        db.session.commit()
+        return jsonify(availability.serialize_all_fields()), 200
+
+    if request.method == "GET":
+        availabilitys = Availability.query.all()
+        availabilitys = list(map(lambda availability: availability.serialize_strict(), availabilitys))
+        return jsonify(availabilitys), 200
+>>>>>>> aron
 
     if request.method == "GET":
         availabilities = Availability.query.all()
