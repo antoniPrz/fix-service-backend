@@ -105,12 +105,6 @@ def get_availability():
         availabilitys = list(map(lambda availability: availability.serialize_strict(), availabilitys))
         return jsonify(availabilitys), 200
 
-<<<<<<< HEAD
-    if request.method == "GET":
-        availabilities = Availability.query.all()
-        availabilities = list(map(lambda availability: availability.serialize_strict(), availabilities))
-        return jsonify(availabilities), 200
-=======
 @app.route("/ratings", methods=["GET", "POST"])
 def get_ratings():
     if request.method == "POST":
@@ -172,7 +166,6 @@ def get_requests():
         requests = list(map(lambda request: request.serialize_strict(), requests))
         return jsonify(requests), 200
 
->>>>>>> aron
 
 if __name__ == "__main__":
     manager.run()
