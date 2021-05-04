@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Services, Profile, Communes, Availability
+from models import db, Services, Profile, Communes, Availability, Ratings, User, Requests
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime, time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
@@ -13,7 +13,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASEDIR, 'test.db')
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASEDIR, 'te_ayudo.db')
 app.config["DEBUG"] = True
 app.config["ENV"] = "development"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -37,8 +37,8 @@ def main():
 def get_services():
     if request.method == "POST":
         service = Services()
-        service.Id_Service = request.json.get("Id_Service")
-        service.Name_Service = request.json.get("Name_Service")
+        service.id_service = request.json.get("id_service")
+        service.name_service = request.json.get("name_service")
         db.session.add(service)
         db.session.commit()
         return jsonify(service.serialize_all_fields()), 200
@@ -52,18 +52,17 @@ def get_services():
 def get_profile():
     if request.method == "POST":
         profile = Profile()
-        profile.Id_Profile = request.json.get("Id_Profile")
-        profile.Rut = request.json.get("Rut")
-        profile.Rol = request.json.get("Rol")
-        profile.Full_Name = request.json.get("Full_Name")
-        profile.Last_Name = request.json.get("Last_Name")
-        profile.Phone = request.json.get("Phone")
-        profile.Address = request.json.get("Address")
-        profile.Question = request.json.get("Question")
-        profile.Answer = request.json.get("Answer")
-        profile.Id_Commune = request.json.get("Id_Commune")
-        profile.Attention_Communes = request.json.get("Attention_Communes")
-        profile.Experience = request.json.get("Experience")
+        profile.id_profile = request.json.get("id_profile")
+        profile.role = request.json.get("role")
+        profile.full_name = request.json.get("full_name")
+        profile.last_name = request.json.get("last_name")
+        profile.phone = request.json.get("phone")
+        profile.address = request.json.get("address")
+        profile.question = request.json.get("question")
+        profile.answer = request.json.get("answer")
+        profile.id_commune = request.json.get("id_commune")
+        profile.attention_communes = request.json.get("attention_communes")
+        profile.experience = request.json.get("experience")
 
         db.session.add(profile)
         db.session.commit()
@@ -78,9 +77,9 @@ def get_profile():
 def get_communes():
     if request.method == "POST":
         communes = Communes()
-        communes.Name_Region = request.json.get("Name_Region")
-        communes.Id_Commune = request.json.get("Id_Commune")
-        communes.Name_Commune = request.json.get("Name_Commune")
+        communes.name_region = request.json.get("name_region")
+        communes.id_commune = request.json.get("id_commune")
+        communes.name_commune = request.json.get("name_commune")
         db.session.add(communes)
         db.session.commit()
         return jsonify(communes.serialize_all_fields()), 200
@@ -94,15 +93,9 @@ def get_communes():
 def get_availability():
     if request.method == "POST":
         availability = Availability()
-        availability.Id_Profile = request.json.get("Id_Profile")
-        #availability.Year = request.json.get("Year")
-        #availability.Month = request.json.get("Month")
-        #availability.Day = request.json.get("Day")
-        #availability.Hour = request.json.get("Hour")
-        #availability.Minute = request.json.get("Minute")
-        #availability.Second = request.json.get("Second")                
-        availability.Date = request.json.get("Date")
-        availability.Hour = request.json.get("Hour")
+        availability.id_profile = request.json.get("id_profile")             
+        availability.date = request.json.get("date")
+        availability.hour = request.json.get("hour")
         db.session.add(availability)
         db.session.commit()
         return jsonify(availability.serialize_all_fields()), 200
@@ -112,10 +105,74 @@ def get_availability():
         availabilitys = list(map(lambda availability: availability.serialize_strict(), availabilitys))
         return jsonify(availabilitys), 200
 
+<<<<<<< HEAD
     if request.method == "GET":
         availabilities = Availability.query.all()
         availabilities = list(map(lambda availability: availability.serialize_strict(), availabilities))
         return jsonify(availabilities), 200
+=======
+@app.route("/ratings", methods=["GET", "POST"])
+def get_ratings():
+    if request.method == "POST":
+        rating = Ratings()
+        rating.id_profile = request.json.get("id_profile")             
+        rating.rating = request.json.get("rating")
+        db.session.add(rating)
+        db.session.commit()
+        return jsonify(rating.serialize_all_fields()), 200
+
+    if request.method == "GET":
+        ratings = Ratings.query.all()
+        ratings = list(map(lambda rating: rating.serialize_strict(), ratings))
+        return jsonify(ratings), 200
+
+@app.route("/user", methods=["GET", "POST"])
+def get_user():
+    if request.method == "POST":
+        user = User()
+        user.id_user = request.json.get("id_user")             
+        user.rut = request.json.get("rut")
+        user.email = request.json.get("email")             
+        password_hash = bcrypt.generate_password_hash(request.json.get('password'))
+        user.password = password_hash
+        password_hash_prev = bcrypt.generate_password_hash(request.json.get('password_previous'))
+        user.password_previous = password_hash_prev     
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.serialize_all_fields()), 200
+
+    if request.method == "GET":
+        users = User.query.all()
+        users = list(map(lambda user: user.serialize_strict(), users))
+        return jsonify(users), 200
+
+@app.route("/requests", methods=["GET", "POST"])
+def get_requests():
+    if request.method == "POST":
+        requests = Requests()
+        requests.id_request = request.json.get("id_request")
+        requests.id_service = request.json.get("id_service")
+        requests.id_profile = request.json.get("id_profile")
+        requests.id_commune = request.json.get("id_commune")
+        requests.request_status = request.json.get("request_status")
+        requests.full_name = request.json.get("full_name")
+        requests.last_name = request.json.get("last_name")
+        requests.contact_phone = request.json.get("contact_phone")
+        requests.address = request.json.get("address")
+        requests.rating = request.json.get("rating")
+        requests.date = request.json.get("date")
+        requests.hour = request.json.get("hour")
+
+        db.session.add(requests)
+        db.session.commit()
+        return jsonify(requests.serialize_all_fields()), 200
+
+    if request.method == "GET":
+        requests = Requests.query.all()
+        requests = list(map(lambda request: request.serialize_strict(), requests))
+        return jsonify(requests), 200
+
+>>>>>>> aron
 
 if __name__ == "__main__":
     manager.run()
