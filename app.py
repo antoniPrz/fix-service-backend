@@ -74,14 +74,13 @@ def get_profile_id(id):
             user = User.query.filter_by(id=profile.user_id).first()
             password_hash = bcrypt.generate_password_hash(request.json.get('password'))
             user.password = password_hash
-            profile.address = request.qjson.get("address")
+            user.id_commune = request.json.get("id_commune")
+            user.address = request.qjson.get("address")
             profile.id_profile = request.json.get("id_profile")
             profile.role = request.json.get("role")
             profile.phone = request.json.get("phone")
-            profile.address = request.json.get("address")
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
-            profile.id_commune = request.json.get("id_commune")
 
             db.session.commit()
             return jsonify("Profile updated"), 200
