@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
+from datetime import datetime
+
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -62,7 +64,7 @@ class Profile(db.Model):
 
     def serialize_strict(self):
         return {
-        "id_profile": self.id,
+        "id": self.id,
         "role": self.role
         }
 
@@ -190,4 +192,28 @@ class Ratings(db.Model):
     def serialize_strict(self):
         return {
         "id_profile": self.id_profile
+        }
+
+
+class User(db.Model):    
+    id_user = db.Column(db.Integer, primary_key=True)
+    rut = db.Column(db.String(9), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(50), nullable=False)
+    password_previous = db.Column(db.String(50), nullable=True)    
+
+    def __repr__(self):
+        return "<User %r>" % self.id_user
+
+    def serialize_all_fields(self):
+        return {
+        "id_user": self.id_user,
+        "rut":self.rut,
+        "email":self.email         
+        }
+
+    def serialize_strict(self):
+        return {
+        "id_user": self.id_user,
+        "rut":self.rut
         }
