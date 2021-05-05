@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Servicios, Perfil, Solicitudes, Comunas
+from models import db, Services, Profile, Communes, User
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
@@ -32,6 +32,98 @@ bcrypt = Bcrypt(app)
 def main():
     return render_template('index.html')
 
+#Cesar inicio
+#Crear un nuevo usuario
+@app.route("/user/register", methods=["POST"])
+def get_user():
+    user = User()
+    user.email = request.json.get("email")
+    user.rut = request.json.get("rut")
+    password_hash = bcrypt.generate_password_hash(request.json.get('password'))
+    user.password = password_hash
+
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.serialize_all_fields()), 200
+
+@app.route("/user/login", methods=["POST"])
+def login():
+    email = request.json.get("email")
+    password = request.json.get("password")
+
+    #valida que el usario exista
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        return jsonify("This user doesn't exist"), 404
+
+    if bcrypt.check_password_hash(user.password, password): #retorna booleano
+        access_token =create_access_token(identity=email)
+        return jsonify({
+            "user": user.serialize_all_fields(),
+            "access_token": access_token
+        })
+
+@app.route('/user/profile/<int:id>', methods=['PUT'])
+def get_profile_id(id):
+    if request.method == 'PUT':
+        if id is not None:
+            profile = Profile.query.filter_by(id=id).first()
+            if profile is None :
+                return jsonify("This user doesn't exist"), 200
+            user = User.query.filter_by(id=profile.user_id).first()
+            password_hash = bcrypt.generate_password_hash(request.json.get('password'))
+            user.password = password_hash
+            profile.address = request.qjson.get("address")
+            profile.id_profile = request.json.get("id_profile")
+            profile.role = request.json.get("role")
+            profile.phone = request.json.get("phone")
+            profile.address = request.json.get("address")
+            profile.question = request.json.get("question")
+            profile.answer = request.json.get("answer")
+            profile.id_commune = request.json.get("id_commune")
+
+            db.session.commit()
+            return jsonify("Profile updated"), 200
+@app.route('/user/profile', methods=["GET", "POST"])
+def get_profile():
+    if request.method == "POST":
+        user = User()
+        user.email = request.json.get("email")
+        user.rut = request.json.get("rut")
+        user.full_name = request.json.get("full_name")
+        user.last_name = request.json.get("last_name")
+        user.phone = request.json.get("phone")
+        user.address = request.json.get("address")
+        user.id_commune = request.json.get("id_commune")
+        password_hash = bcrypt.generate_password_hash(request.json.get('password'))
+        user.password = password_hash
+
+        db.session.add(user)
+        db.session.commit()
+
+        profile = Profile()
+        profile.role = request.json.get("role")
+        profile.question = request.json.get("question")
+        profile.answer = request.json.get("answer")
+       
+        if profile.role != "client":    
+            profile.attention_communes = request.json.get("attention_communes")
+            profile.experience = request.json.get("experience")
+
+        db.session.add(profile)
+        db.session.commit()
+        return jsonify({
+            'user':user.serialize_all_fields(),
+            'profile':profile.serialize_all_fields()
+            }), 200
+
+    if request.method == "GET":
+        profiles = Profile.query.all()
+        profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
+        return jsonify(profiles), 200
+#Cesar fin
+
 @app.route("/service", methods=["GET", "POST"])
 def get_services():
     if request.method == "POST":
@@ -47,31 +139,6 @@ def get_services():
         services = list(map(lambda service: service.serialize_strict(), services))
         return jsonify(services), 200
 
-@app.route("/profile", methods=["GET", "POST"])
-def get_profile():
-    if request.method == "POST":
-        profile = Profile()
-        profile.Id_Profile = request.json.get("Id_Profile")
-        profile.Rut = request.json.get("Rut")
-        profile.Rol = request.json.get("Rol")
-        profile.Names = request.json.get("Names")
-        profile.Last_Name = request.json.get("Last_Name")
-        profile.Phone = request.json.get("Phone")
-        profile.Address = request.json.get("Address")
-        profile.Question = request.json.get("Question")
-        profile.Answer = request.json.get("Answer")
-        profile.Id_Commune = request.json.get("Id_Commune")
-        profile.Attention_Communes = request.json.get("Attention_Communes")
-        profile.Experience = request.json.get("Experience")
-
-        db.session.add(profile)
-        db.session.commit()
-        return jsonify(profile.serialize_all_fields()), 200
-
-    if request.method == "GET":
-        profiles = Profile.query.all()
-        profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
-        return jsonify(profiles), 200
 
 
 @app.route("/communes", methods=["GET", "POST"])
