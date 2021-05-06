@@ -146,7 +146,6 @@ def get_communes():
         communes = list(map(lambda commune: commune.serialize_strict(), communes))
         return jsonify(communes), 200
 
-<<<<<<< HEAD
 
 @app.route("/availability", methods=["GET", "POST"])
 def get_availability():
