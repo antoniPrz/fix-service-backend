@@ -48,7 +48,7 @@ def login():
 
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
-        return jsonify({git
+        return jsonify({
             "user": user.serialize_all_fields(),
             "access_token": access_token
         })
