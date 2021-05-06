@@ -118,7 +118,7 @@ def get_profile():
 def get_services():
     if request.method == "POST":
         service = Services()
-        service.id_service = request.json.get("id_service")
+        service.id = request.json.get("id")
         service.name_service = request.json.get("name_service")
         db.session.add(service)
         db.session.commit()
@@ -134,8 +134,8 @@ def get_services():
 def get_communes():
     if request.method == "POST":
         communes = Communes()
+        communes.id = request.json.get("id")
         communes.name_region = request.json.get("name_region")
-        communes.id_commune = request.json.get("id_commune")
         communes.name_commune = request.json.get("name_commune")
         db.session.add(communes)
         db.session.commit()
@@ -151,7 +151,7 @@ def get_communes():
 def get_availability():
     if request.method == "POST":
         availability = Availability()
-        availability.id_profile = request.json.get("id_profile")             
+        availability.id = request.json.get("id")             
         availability.date = request.json.get("date")
         availability.hour = request.json.get("hour")
         db.session.add(availability)
@@ -168,7 +168,7 @@ def get_availability():
 def get_ratings():
     if request.method == "POST":
         rating = Ratings()
-        rating.id_profile = request.json.get("id_profile")             
+        rating.id = request.json.get("id")             
         rating.rating = request.json.get("rating")
         db.session.add(rating)
         db.session.commit()
@@ -184,16 +184,14 @@ def get_ratings():
 def get_requests():
     if request.method == "POST":
         requests = Requests()
-        requests.id_request = request.json.get("id_request")
+        requests.id = request.json.get("id")
         requests.id_service = request.json.get("id_service")
-        requests.id_profile = request.json.get("id_profile")
         requests.id_commune = request.json.get("id_commune")
         requests.request_status = request.json.get("request_status")
         requests.full_name = request.json.get("full_name")
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
         requests.address = request.json.get("address")
-        requests.rating = request.json.get("rating")
         requests.date = request.json.get("date")
         requests.hour = request.json.get("hour")
 
