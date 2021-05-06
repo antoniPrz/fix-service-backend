@@ -161,7 +161,6 @@ class User(db.Model):
 
 class Requests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    id_service = db.Column(db.Integer, nullable=False)
     id_commune = db.Column(db.Integer, nullable=False)
     request_status = db.Column(db.String(10), nullable=False)
     full_name = db.Column(db.String(60), nullable=False)
@@ -179,7 +178,6 @@ class Requests(db.Model):
     def serialize_all_fields(self):
         return {
         "id": self.id,
-        "id_service": self.id_service,
         "id_profile": self.id_profile,
         "id_commune": self.id_commune,
         "request_status": self.request_status,
@@ -193,8 +191,7 @@ class Requests(db.Model):
 
     def serialize_strict(self):
         return {
-        "id": self.id,  
-        "id_service": self.id_service,
+        "id": self.id,
         "id_profile": self.id_profile,  
         "id_commune": self.id_commune,
         "request_status": self.request_status,

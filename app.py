@@ -186,7 +186,6 @@ def get_requests():
     if request.method == "POST":
         requests = Requests()
         requests.id = request.json.get("id")
-        requests.id_service = request.json.get("id_service")
         requests.id_commune = request.json.get("id_commune")
         requests.request_status = request.json.get("request_status")
         requests.full_name = request.json.get("full_name")
