@@ -34,19 +34,7 @@ def main():
     return render_template('index.html')
 
 #Cesar inicio
-#Crear un nuevo usuario
-@app.route("/user/register", methods=["POST"])
-def get_user():
-    user = User()
-    user.email = request.json.get("email")
-    user.rut = request.json.get("rut")
-    password_hash = bcrypt.generate_password_hash(request.json.get('password'))
-    user.password = password_hash
-
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user.serialize_all_fields()), 200
-
+#login usuario
 @app.route("/user/login", methods=["POST"])
 def login():
     email = request.json.get("email")
@@ -60,11 +48,11 @@ def login():
 
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
-        return jsonify({
+        return jsonify({git
             "user": user.serialize_all_fields(),
             "access_token": access_token
         })
-
+#Editar un usuario
 @app.route('/user/profile/<int:id>', methods=['PUT'])
 def get_profile_id(id):
     if request.method == 'PUT':
@@ -75,18 +63,19 @@ def get_profile_id(id):
             user = User.query.filter_by(id=profile.user_id).first()
             password_hash = bcrypt.generate_password_hash(request.json.get('password'))
             user.password = password_hash
-            profile.address = request.qjson.get("address")
+            user.id_commune = request.json.get("id_commune")
+            user.address = request.qjson.get("address")
             profile.id_profile = request.json.get("id_profile")
             profile.role = request.json.get("role")
             profile.phone = request.json.get("phone")
-            profile.address = request.json.get("address")
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
-            profile.id_commune = request.json.get("id_commune")
+
 
             db.session.commit()
             return jsonify("Profile updated"), 200
-            
+
+#Crear un nuevo usuario          
 @app.route('/user/profile', methods=["GET", "POST"])
 def get_profile():
     if request.method == "POST":

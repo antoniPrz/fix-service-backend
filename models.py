@@ -195,25 +195,4 @@ class Ratings(db.Model):
         }
 
 
-class User(db.Model):    
-    id_user = db.Column(db.Integer, primary_key=True)
-    rut = db.Column(db.String(9), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
-    password_previous = db.Column(db.String(50), nullable=True)    
 
-    def __repr__(self):
-        return "<User %r>" % self.id_user
-
-    def serialize_all_fields(self):
-        return {
-        "id_user": self.id_user,
-        "rut":self.rut,
-        "email":self.email         
-        }
-
-    def serialize_strict(self):
-        return {
-        "id_user": self.id_user,
-        "rut":self.rut
-        }
