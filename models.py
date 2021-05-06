@@ -191,3 +191,6 @@ class Ratings(db.Model):
         return {
         "id_profile": self.id_profile
         }
+
+
+
