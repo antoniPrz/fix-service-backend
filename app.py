@@ -37,13 +37,13 @@ def main():
 def login():
     email = request.json.get("email")
     password = request.json.get("password")
+    rut= request.json.get("rut")
 
-    #valida que el usario exista
-    user = User.query.filter_by(email=email).first()
+    #valida que el usario exista    
+    user = User.query.filter_by(email=email).first()    
 
-    if user is None:
+    if user is None:             
         return jsonify("This user doesn't exist"), 404
-
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
         return jsonify({
@@ -146,7 +146,6 @@ def get_communes():
         communes = list(map(lambda commune: commune.serialize_strict(), communes))
         return jsonify(communes), 200
 
-<<<<<<< HEAD
 
 @app.route("/availability", methods=["GET", "POST"])
 def get_availability():
