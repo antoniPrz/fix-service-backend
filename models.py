@@ -76,7 +76,7 @@ class Communes(db.Model):
     def serialize_strict(self):
         return {
         "id":self.id,
-        "name_region": self.name_region
+        "name_commune":self.name_commune 
         }
 
 
