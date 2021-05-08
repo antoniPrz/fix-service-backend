@@ -103,7 +103,7 @@ def get_profile():
         #Regular expression that checks a valid password
         preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
         #Regular expression that checks a valid rut
-        rut = '^([0-9]+-[0-9Kk])$'
+        rut = '^[1-9]{1}[0-9]{6,7}-[0-9kK]{1}$'
         user = User()
         #Checking email
         if (re.search(ereg,request.json.get("email"))):
