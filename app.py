@@ -82,7 +82,13 @@ def get_profile_id(id):
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
 
-
+            if profile.role != "client":    
+                profile.attention_communes = request.json.get("attention_communes")
+                profile.experience = request.json.get("experience")
+                attetion_communes = request.json.get("communes")
+                for name_commune in attetion_communes:
+                    communes=Communes()
+                    communes.name_commune=name_commune         
             db.session.commit()
             return jsonify("Profile updated"), 200
         else:
