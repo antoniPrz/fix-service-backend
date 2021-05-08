@@ -30,9 +30,9 @@ class Profile(db.Model):
     role = db.Column(db.String(15), nullable=False)
     question = db.Column(db.String(100), nullable=True)
     answer = db.Column(db.String(200), nullable=True)
-    attention_communes = db.Column(db.String(200), nullable=True)
-    experience = db.Column(db.String(200), nullable=True)
+    experience = db.Column(db.String(250), nullable=True)
     id_user = db.Column (db.Integer, db.ForeignKey("user.id", ondelete='CASCADE'), nullable=True)
+    id_communes = db.Column (db.Integer, db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
     ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
     availabilities = db.relationship('Availability', backref='profile', cascade='all, delete', lazy=True) 
     requests = db.relationship('Requests', backref='profile', cascade='all, delete', lazy=True) 
@@ -43,10 +43,11 @@ class Profile(db.Model):
     def serialize_all_fields(self):
         return {
         "id": self.id, 
+        "id_user": self.id_user, 
+        "id_communes": self.id_communes, 
         "role": self.role,
         "question":self.question,  
         "answer":self.answer,
-        "attention_communes":self.attention_communes,  
         "experience": self.experience                              
         }
 
@@ -59,9 +60,8 @@ class Profile(db.Model):
 
 class Communes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name_region = db.Column(db.String(100), nullable=False)
     name_commune = db.Column(db.String(150), nullable=False)
-    user = db.relationship('User', backref='communes', cascade='all, delete', uselist=False) 
+    profiles = db.relationship('Profile', backref='communes', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
         return "<Communes %r>" % self.name_region
@@ -69,14 +69,13 @@ class Communes(db.Model):
     def serialize_all_fields(self):
         return {
         "id":self.id,
-        "name_region": self.name_region,
         "name_commune":self.name_commune  
         }
 
     def serialize_strict(self):
         return {
         "id":self.id,
-        "name_region": self.name_region
+        "name_commune": self.name_commune
         }
 
 
@@ -134,7 +133,7 @@ class User(db.Model):
     last_name = db.Column(db.String(90), nullable=False)
     phone = db.Column(db.Integer, nullable=False)
     address = db.Column(db.String(150), nullable=False)
-    id_commune = db.Column (db.Integer, db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
+    name_commune = db.Column(db.String(150), nullable=False)
     profiles = db.relationship('Profile', backref='user', cascade='all, delete', lazy=True) #uselist=False si la relacion es uno a uno
     
     def _repr_(self):
@@ -149,7 +148,7 @@ class User(db.Model):
             "last_name": self.last_name,
             "phone":self.phone,  
             "address": self.address,
-            "id_commune": self.id_commune
+            "name_commune": self.name_commune
         }
 
     def serialize_strict(self):
