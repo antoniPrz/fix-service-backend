@@ -60,6 +60,7 @@ class Profile(db.Model):
 
 class Communes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name_region = db.Column(db.String(100), nullable=True)
     name_commune = db.Column(db.String(150), nullable=False)
     profiles = db.relationship('Profile', backref='communes', cascade='all, delete', lazy=True) 
 
@@ -69,6 +70,7 @@ class Communes(db.Model):
     def serialize_all_fields(self):
         return {
         "id":self.id,
+        "name_region":self.name_region, 
         "name_commune":self.name_commune  
         }
 

@@ -27,12 +27,6 @@ CORS(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 
-from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import DataRequired, Email
-
-class ProfileForm(FlaskForm):
-    email = StringField("Email",  validators=[DataRequired(), Email()])
 
 @app.route("/")
 def main():
@@ -74,7 +68,7 @@ def get_profile_id(id):
                 user.password = pw_hash
             else:
                 return "Formato de contraseña errónea", 400
-            user.name_commune = request.json.get("id_commune")
+            user.name_commune = request.json.get("name_commune")
             user.address = request.qjson.get("address")
             profile.id_profile = request.json.get("id_profile")
             profile.role = request.json.get("role")
@@ -82,8 +76,7 @@ def get_profile_id(id):
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
 
-            if profile.role != "client":    
-                profile.attention_communes = request.json.get("attention_communes")
+            if profile.role != "client":
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
@@ -135,9 +128,7 @@ def get_profile():
         profile.question = request.json.get("question")
         profile.answer = request.json.get("answer")
 
-       
-        if profile.role != "client":    
-            profile.attention_communes = request.json.get("attention_communes")
+        if profile.role != "client":
             profile.experience = request.json.get("experience")
             attetion_communes = request.json.get("communes")
             for name_commune in attetion_communes:
