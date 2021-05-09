@@ -41,14 +41,16 @@ def login():
     rut= request.json.get("rut")
 
     #valida que el usario exista    
-    user = User.query.filter_by(email=email).first()    
+    user = User.query.filter_by(email=email).first()
+    role = Profile.query.filter_by(id_user=request.json.get("email")).first()  
 
     if user is None:             
         return jsonify("This user doesn't exist"), 404
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
         return jsonify({
-            "user": user.serialize_all_fields(),
+            "user": user.serialize_all_fields(),     
+            "role" : role.serialize_strict(),
             "access_token": access_token
         })
 #Editar un usuario
@@ -127,6 +129,7 @@ def get_profile():
         profile.role = request.json.get("role")
         profile.question = request.json.get("question")
         profile.answer = request.json.get("answer")
+        profile.id_user = request.json.get("email")
 
         if profile.role != "client":
             profile.experience = request.json.get("experience")

@@ -31,14 +31,14 @@ class Profile(db.Model):
     question = db.Column(db.String(100), nullable=True)
     answer = db.Column(db.String(200), nullable=True)
     experience = db.Column(db.String(250), nullable=True)
-    id_user = db.Column (db.Integer, db.ForeignKey("user.id", ondelete='CASCADE'), nullable=True)
+    id_user = db.Column (db.Integer, db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
     id_communes = db.Column (db.Integer, db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
     ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
     availabilities = db.relationship('Availability', backref='profile', cascade='all, delete', lazy=True) 
     requests = db.relationship('Requests', backref='profile', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
-        return "<Profile %r>" % self.role
+        return "<Profile %r>" % self.id_user
 
     def serialize_all_fields(self):
         return {
