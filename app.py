@@ -1,4 +1,4 @@
-import os
+import os, re
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
@@ -76,7 +76,7 @@ def get_profile_id(id):
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
 
-            if profile.role != "client":    
+            if profile.role != "client":
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
@@ -96,7 +96,6 @@ def get_profile():
         #Regular expression that checks a valid password
         preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
         #Regular expression that checks a valid rut
-        rut = '^([0-9]+-[0-9Kk])$'
         rut = '^[1-9]{1}[0-9]{6,7}-[0-9kK]{1}$'
         user = User()
         #Checking email
@@ -128,8 +127,8 @@ def get_profile():
         profile.role = request.json.get("role")
         profile.question = request.json.get("question")
         profile.answer = request.json.get("answer")
-       
-        if profile.role != "client":    
+
+        if profile.role != "client":
             profile.experience = request.json.get("experience")
             attetion_communes = request.json.get("communes")
             for name_commune in attetion_communes:
@@ -243,3 +242,8 @@ def get_requests():
 
 if __name__ == "__main__":
     manager.run()
+
+
+
+
+

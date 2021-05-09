@@ -12,6 +12,8 @@ flask-migrate = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
 datetime = "*"
+flask-wtf = "*"
+email-validator = "*"
 
 [dev-packages]
 

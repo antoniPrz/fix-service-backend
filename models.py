@@ -30,7 +30,7 @@ class Profile(db.Model):
     role = db.Column(db.String(15), nullable=False)
     question = db.Column(db.String(100), nullable=True)
     answer = db.Column(db.String(200), nullable=True)
-    experience = db.Column(db.String(200), nullable=True)    
+    experience = db.Column(db.String(250), nullable=True)
     id_user = db.Column (db.Integer, db.ForeignKey("user.id", ondelete='CASCADE'), nullable=True)
     id_communes = db.Column (db.Integer, db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
     ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
@@ -48,7 +48,7 @@ class Profile(db.Model):
         "role": self.role,
         "question":self.question,  
         "answer":self.answer,
-        "experience": self.experience                             
+        "experience": self.experience                              
         }
 
     def serialize_strict(self):
@@ -62,7 +62,7 @@ class Communes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name_region = db.Column(db.String(100), nullable=True)
     name_commune = db.Column(db.String(150), nullable=False)
-    profiles = db.relationship('Profile', backref='communes', cascade='all, delete', lazy=True)
+    profiles = db.relationship('Profile', backref='communes', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
         return "<Communes %r>" % self.name_region
@@ -70,14 +70,14 @@ class Communes(db.Model):
     def serialize_all_fields(self):
         return {
         "id":self.id,
-        "name_region": self.name_region,
+        "name_region":self.name_region, 
         "name_commune":self.name_commune  
         }
 
     def serialize_strict(self):
         return {
         "id":self.id,
-        "name_commune":self.name_commune 
+        "name_commune": self.name_commune
         }
 
 
