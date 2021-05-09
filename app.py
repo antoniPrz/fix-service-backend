@@ -27,6 +27,7 @@ CORS(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 
+
 @app.route("/")
 def main():
     return render_template('index.html')
@@ -59,9 +60,15 @@ def get_profile_id(id):
             if profile is None :
                 return jsonify("This user doesn't exist"), 200
             user = User.query.filter_by(id=profile.user_id).first()
-            password_hash = bcrypt.generate_password_hash(request.json.get('password'))
-            user.password = password_hash
-            user.id_commune = request.json.get("id_commune")
+            #Regular expression that checks a valid password
+            preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
+            #Checking password
+            if (re.search(preg,request.json.get('password'))):
+                pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
+                user.password = pw_hash
+            else:
+                return "Formato de contraseña errónea", 400
+            user.name_commune = request.json.get("name_commune")
             user.address = request.qjson.get("address")
             profile.id_profile = request.json.get("id_profile")
             profile.role = request.json.get("role")
@@ -69,25 +76,51 @@ def get_profile_id(id):
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
 
-
+            if profile.role != "client":    
+                profile.experience = request.json.get("experience")
+                attetion_communes = request.json.get("communes")
+                for name_commune in attetion_communes:
+                    communes=Communes()
+                    communes.name_commune=name_commune         
             db.session.commit()
             return jsonify("Profile updated"), 200
+        else:
+            return "No existe ese usuario", 400
 
 #Crear un nuevo usuario          
 @app.route('/user/profile', methods=["GET", "POST"])
 def get_profile():
     if request.method == "POST":
+        #Regular expression that checks a valid email
+        ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+        #Regular expression that checks a valid password
+        preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
+        #Regular expression that checks a valid rut
+        rut = '^([0-9]+-[0-9Kk])$'
+        rut = '^[1-9]{1}[0-9]{6,7}-[0-9kK]{1}$'
         user = User()
-        user.email = request.json.get("email")
-        user.rut = request.json.get("rut")
+        #Checking email
+        if (re.search(ereg,request.json.get("email"))):
+            user.email = request.json.get("email")
+        else:
+            return "Formato de email erróneo", 400
+        #Checking password
+        if (re.search(preg,request.json.get('password'))):
+            pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
+            user.password = pw_hash
+        else:
+            return "Formato de contraseña errónea", 400
+        #Checking rut
+        if (re.search(rut,request.json.get('rut'))):
+            user.rut = request.json.get("rut")
+        else:
+            return "Formato de RUT erróneo", 400
+
         user.full_name = request.json.get("full_name")
         user.last_name = request.json.get("last_name")
         user.phone = request.json.get("phone")
         user.address = request.json.get("address")
-        user.id_commune = request.json.get("id_commune")
-        password_hash = bcrypt.generate_password_hash(request.json.get('password'))
-        user.password = password_hash
-
+        user.name_commune = request.json.get("name_commune")
         db.session.add(user)
         db.session.commit()
 
@@ -97,11 +130,15 @@ def get_profile():
         profile.answer = request.json.get("answer")
        
         if profile.role != "client":    
-            profile.attention_communes = request.json.get("attention_communes")
             profile.experience = request.json.get("experience")
-
+            attetion_communes = request.json.get("communes")
+            for name_commune in attetion_communes:
+                communes=Communes()
+                communes.name_commune=name_commune
+                db.session.add(communes)
         db.session.add(profile)
         db.session.commit()
+
         return jsonify({
             'user':user.serialize_all_fields(),
             'profile':profile.serialize_all_fields()
@@ -206,9 +243,3 @@ def get_requests():
 
 if __name__ == "__main__":
     manager.run()
-
-
-
-
-
-

@@ -1,14 +1,8 @@
 """empty message
 
-<<<<<<< HEAD:migrations/versions/db2f47baf897_.py
-Revision ID: db2f47baf897
+Revision ID: 70fad3991756
 Revises: 
-Create Date: 2021-05-05 21:24:11.429834
-=======
-Revision ID: 80aaa2b22dfe
-Revises: 
-Create Date: 2021-05-05 20:48:49.419327
->>>>>>> c04c74eafd0ddf08ccd6cb675ff9b51fdeca8eb7:migrations/versions/80aaa2b22dfe_.py
+Create Date: 2021-05-08 17:50:06.859348
 
 """
 from alembic import op
@@ -16,11 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<< HEAD:migrations/versions/db2f47baf897_.py
-revision = 'db2f47baf897'
-=======
-revision = '80aaa2b22dfe'
->>>>>>> c04c74eafd0ddf08ccd6cb675ff9b51fdeca8eb7:migrations/versions/80aaa2b22dfe_.py
+revision = '70fad3991756'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,8 +38,7 @@ def upgrade():
     sa.Column('last_name', sa.String(length=90), nullable=False),
     sa.Column('phone', sa.Integer(), nullable=False),
     sa.Column('address', sa.String(length=150), nullable=False),
-    sa.Column('id_commune', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['id_commune'], ['communes.id'], ondelete='CASCADE'),
+    sa.Column('name_commune', sa.String(length=150), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('rut')
@@ -59,9 +48,10 @@ def upgrade():
     sa.Column('role', sa.String(length=15), nullable=False),
     sa.Column('question', sa.String(length=100), nullable=True),
     sa.Column('answer', sa.String(length=200), nullable=True),
-    sa.Column('attention_communes', sa.String(length=200), nullable=True),
     sa.Column('experience', sa.String(length=200), nullable=True),
     sa.Column('id_user', sa.Integer(), nullable=True),
+    sa.Column('id_communes', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['id_communes'], ['communes.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['id_user'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
