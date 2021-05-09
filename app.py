@@ -27,12 +27,6 @@ CORS(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 
-from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import DataRequired, Email
-
-class ProfileForm(FlaskForm):
-    email = StringField("Email",  validators=[DataRequired(), Email()])
 
 @app.route("/")
 def main():
