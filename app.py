@@ -42,7 +42,7 @@ def login():
 
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
-    role = Profile.query.all()
+    role = Profile.query.filter_by(id_user=request.json.get("email"))
     role = list(map(lambda roles: roles.serialize_strict(), role))    
 
     if user is None:             
@@ -53,7 +53,11 @@ def login():
             "user": user.serialize_all_fields(),     
             "role" : role, 
             "access_token": access_token
-        })
+        }),200
+    else:
+        return "Ingresó mal la contraseña", 400
+
+
 #Editar un usuario
 @app.route('/user/profile/<int:id>', methods=['PUT'])
 def get_profile_id(id):
