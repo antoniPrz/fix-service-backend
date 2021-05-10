@@ -42,7 +42,6 @@ def login():
 
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
-    #role = Profile.query.filter_by(id_user=request.json.get("email")).first()
     role = Profile.query.all()
     role = list(map(lambda roles: roles.serialize_strict(), role))    
 
