@@ -60,6 +60,9 @@ def get_profile_id(id):
             if profile is None :
                 return jsonify("This user doesn't exist"), 200
             user = User.query.filter_by(id=profile.user_id).first()
+           
+            #Regular expression that checks a valid phone
+            phonereg = '^(56)?(\s?)(0?9)(\s?)[9876543]\d{7}$'
             #Regular expression that checks a valid password
             preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
             #Checking password
@@ -68,6 +71,13 @@ def get_profile_id(id):
                 user.password = pw_hash
             else:
                 return "Formato de contraseña errónea", 400
+            #Checking phone
+            if (re.search(phonereg,request.json.get('phone'))):
+                user.phone = request.json.get("phone")
+            else:
+                return "Formato de teléfono erróneo", 400
+            
+           
             user.name_commune = request.json.get("name_commune")
             user.address = request.qjson.get("address")
             profile.id_profile = request.json.get("id_profile")
@@ -91,10 +101,13 @@ def get_profile_id(id):
 @app.route('/user/profile', methods=["GET", "POST"])
 def get_profile():
     if request.method == "POST":
+       
         #Regular expression that checks a valid email
         ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
         #Regular expression that checks a valid password
         preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
+        #Regular expression that checks a valid phone
+        phonereg = '^(56)?(\s?)(0?9)(\s?)[9876543]\d{7}$'
         #Regular expression that checks a valid rut
         rut = '^[1-9]{1}[0-9]{6,7}-[0-9kK]{1}$'
         user = User()
@@ -114,10 +127,14 @@ def get_profile():
             user.rut = request.json.get("rut")
         else:
             return "Formato de RUT erróneo", 400
+        #Checking phone
+        if (re.search(phonereg,request.json.get('phone'))):
+            user.phone = request.json.get("phone")
+        else:
+            return "Formato de teléfono erróneo", 400
 
         user.full_name = request.json.get("full_name")
         user.last_name = request.json.get("last_name")
-        user.phone = request.json.get("phone")
         user.address = request.json.get("address")
         user.name_commune = request.json.get("name_commune")
         db.session.add(user)
