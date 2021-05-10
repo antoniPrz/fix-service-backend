@@ -54,7 +54,9 @@ class Profile(db.Model):
     def serialize_strict(self):
         return {
         "id_profile": self.id,
-        "role": self.role
+        "role": self.role,
+        "question":self.question,  
+        "answer":self.answer,        
         }
 
 
