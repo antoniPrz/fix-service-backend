@@ -42,7 +42,9 @@ def login():
 
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
-    role = Profile.query.filter_by(id_user=request.json.get("email")).first()  
+    #role = Profile.query.filter_by(id_user=request.json.get("email")).first()
+    role = Profile.query.all()
+    role = list(map(lambda roles: roles.serialize_strict(), role))    
 
     if user is None:             
         return jsonify("This user doesn't exist"), 404
@@ -50,7 +52,7 @@ def login():
         access_token =create_access_token(identity=email)
         return jsonify({
             "user": user.serialize_all_fields(),     
-            "role" : role.serialize_strict(),
+            "role" : role, 
             "access_token": access_token
         })
 #Editar un usuario

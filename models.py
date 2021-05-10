@@ -128,8 +128,8 @@ class Ratings(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    rut = db.Column(db.String(10), unique=True)
-    email = db.Column(db.String(30), nullable=False, unique=True)
+    rut = db.Column(db.String(10), nullable=False)
+    email = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(10), nullable=False)
     full_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(90), nullable=False)
