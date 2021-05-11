@@ -42,8 +42,7 @@ def login():
 
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
-    role = Profile.query.filter_by(id_user=request.json.get("email"))
-    role = list(map(lambda roles: roles.serialize_strict(), role))    
+    profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
 
     if user is None:             
         return jsonify("This user doesn't exist"), 404
@@ -51,7 +50,7 @@ def login():
         access_token =create_access_token(identity=email)
         return jsonify({
             "user": user.serialize_all_fields(),     
-            "role" : role, 
+            "profile" : profile.serialize_all_fields(),
             "access_token": access_token
         }),200
     else:
@@ -98,6 +97,13 @@ def get_profile_id(id):
 @app.route('/user/profile', methods=["GET", "POST"])
 def get_profile():
     if request.method == "POST":
+        #valida que el usuario ya exista como cliente o especialista
+        email = request.json.get("email")
+        user = User.query.filter_by(email=email).first()
+    
+        if user != None:             
+            return jsonify("Usuario ya existe. Ingrese a su sesión"), 404
+
         #Regular expression that checks a valid email
         ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
         #Regular expression that checks a valid password
