@@ -40,6 +40,22 @@ def login():
     password = request.json.get("password")
     rut= request.json.get("rut")
 
+    #Regular expression that checks a valid email
+    ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+    #Regular expression that checks a valid password
+    preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
+    user = User()
+    #Checking email
+    if (re.search(ereg,request.json.get("email"))):
+        user.email = request.json.get("email")
+    else:
+        return "Formato de email erróneo", 400
+    #Checking password
+    if (re.search(preg,request.json.get('password'))):
+        pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
+        user.password = pw_hash
+    else:
+        return "Formato de contraseña errónea", 400
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
     profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
@@ -114,6 +130,8 @@ def get_profile():
         if user != None:             
             return jsonify("Usuario ya existe. Ingrese a su sesión"), 404
 
+        #Para la primera etapa en name_region sera por defecto Region Metropolitana
+        region= "Region Metropolitana"
         #Regular expression that checks a valid email
         ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
         #Regular expression that checks a valid password
@@ -150,20 +168,23 @@ def get_profile():
         user.address = request.json.get("address")
         user.name_commune = request.json.get("name_commune")
         db.session.add(user)
-        db.session.commit()
 
         profile = Profile()
         profile.role = request.json.get("role")
         profile.question = request.json.get("question")
         profile.answer = request.json.get("answer")
         profile.id_user = request.json.get("email")
+        profile.id_communes= request.json.get("rut")
 
         if profile.role != "client":
             profile.experience = request.json.get("experience")
+            profile.id_communes= request.json.get("rut")
             attetion_communes = request.json.get("communes")
             for name_commune in attetion_communes:
                 communes=Communes()
                 communes.name_commune=name_commune
+                communes.rut = request.json.get("rut")
+                communes.name_region = region
                 db.session.add(communes)
         db.session.add(profile)
         db.session.commit()
