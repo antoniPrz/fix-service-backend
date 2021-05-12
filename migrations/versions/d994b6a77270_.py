@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 026ce87ba304
+Revision ID: d994b6a77270
 Revises: 
-Create Date: 2021-05-10 22:18:41.210012
+Create Date: 2021-05-11 19:58:36.907676
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '026ce87ba304'
+revision = 'd994b6a77270'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,6 +41,8 @@ def upgrade():
     sa.Column('name_commune', sa.String(length=150), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('rut'),
     sa.UniqueConstraint('rut')
     )
     op.create_table('profile',
@@ -49,7 +51,7 @@ def upgrade():
     sa.Column('question', sa.String(length=100), nullable=True),
     sa.Column('answer', sa.String(length=200), nullable=True),
     sa.Column('experience', sa.String(length=250), nullable=True),
-    sa.Column('id_user', sa.Integer(), nullable=False),
+    sa.Column('id_user', sa.String(length=30), nullable=False),
     sa.Column('id_communes', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id_communes'], ['communes.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['id_user'], ['user.id'], ondelete='CASCADE'),
