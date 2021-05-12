@@ -81,8 +81,10 @@ def get_profile_id(id):
             profile = Profile.query.filter_by(id=id).first()
             if profile is None :
                 return jsonify("This user doesn't exist"), 200
-            user = User.query.filter_by(id=profile.user_id).first()
-           
+            user = User.query.filter_by(id=profile.id).first()
+
+            #Para la primera etapa en name_region sera por defecto Region Metropolitana
+            region= "Region Metropolitana"           
             #Regular expression that checks a valid phone
             phonereg = '^(56)?(\s?)(0?9)(\s?)[9876543]\d{7}$'
             #Regular expression that checks a valid password
@@ -101,7 +103,7 @@ def get_profile_id(id):
             
            
             user.name_commune = request.json.get("name_commune")
-            user.address = request.qjson.get("address")
+            user.address = request.json.get("address")
             profile.id_profile = request.json.get("id_profile")
             profile.role = request.json.get("role")
             profile.phone = request.json.get("phone")
@@ -113,7 +115,10 @@ def get_profile_id(id):
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
                     communes=Communes()
-                    communes.name_commune=name_commune         
+                    communes.name_commune=name_commune 
+                    communes.rut = user.rut
+                    communes.name_region = region 
+                    db.session.add(communes)       
             db.session.commit()
             return jsonify("Profile updated"), 200
         else:
