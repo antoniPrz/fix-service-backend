@@ -31,8 +31,8 @@ class Profile(db.Model):
     question = db.Column(db.String(100), nullable=True)
     answer = db.Column(db.String(200), nullable=True)
     experience = db.Column(db.String(250), nullable=True)
-    id_user = db.Column (db.Integer, db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
-    id_communes = db.Column (db.Integer, db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
+    id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
+    id_communes = db.Column(db.String(10), db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=False)
     ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
     availabilities = db.relationship('Availability', backref='profile', cascade='all, delete', lazy=True) 
     requests = db.relationship('Requests', backref='profile', cascade='all, delete', lazy=True) 
@@ -62,6 +62,7 @@ class Profile(db.Model):
 
 class Communes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    rut = db.Column(db.String(10), nullable=False)
     name_region = db.Column(db.String(100), nullable=True)
     name_commune = db.Column(db.String(150), nullable=False)
     profiles = db.relationship('Profile', backref='communes', cascade='all, delete', lazy=True) 
