@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_cors import CORS
-from models import db, Services, Profile, Communes, Availability, Ratings, User, Requests
+from models import db, Services, Profile, Communes, Availability, Ratings, User, Requests, Specialty
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime, time, timedelta
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
@@ -123,6 +123,17 @@ def get_profile_id(id):
                     communes.rut = user.rut
                     communes.name_region = region
                     db.session.add(communes)
+                
+                Specialty.query.filter_by(
+                    id_user = (user.email)
+                ).delete(synchronize_session=False)
+                specialties = request.json.get("name_specialty")
+                for name_specialty in specialties:
+                    specialty=Specialty ()
+                    specialty.name_specialty=name_specialty
+                    specialty.id_user = request.json.get("email")
+                    db.session.add(specialty)
+
             db.session.commit()
             return jsonify("Su perfil ha sido actualizado."), 200
         else:
@@ -202,6 +213,12 @@ def get_profile():
                 communes.rut = request.json.get("rut")
                 communes.name_region = region
                 db.session.add(communes)
+            specialties = request.json.get("name_specialty")
+            for name_specialty in specialties:
+                specialty=Specialty ()
+                specialty.name_specialty=name_specialty
+                specialty.id_user = request.json.get("email")
+                db.session.add(specialty)
         db.session.add(profile)
         db.session.commit()
 
