@@ -84,6 +84,11 @@ def get_profile_id(id):
             if profile is None :
                 return jsonify("Usuario no existe"), 404
             user = User.query.filter_by(id=profile.id).first()
+            #inicioAAAAA
+            #rut= Profile.query.filter_by(id=id).first()
+            #rut_client =rut.id_communes            
+            #comunas= Communes.query.filter_by(rut=profile.id_communes).first()
+            #finAAAAA
             #Para la primera etapa en name_region sera por defecto Region Metropolitana
             region= "Region Metropolitana"           
             #Regular expression that checks a valid phone
@@ -111,6 +116,20 @@ def get_profile_id(id):
             profile.answer = request.json.get("answer")
 
             if profile.role != "client":
+                #inicioAAAAAAAA
+                #print(comunas)
+                rut_cliente= profile.id_communes
+                print(rut_cliente)
+                Communes.query.filter_by(
+                    rut = text(rut_cliente)
+                ).delete(synchronize_session=False)
+                #print(communas)
+                #).\
+                #delete(synchronize_session=False)                
+                db.session.commit()
+                #db.session.expire_all()
+                #).delete(synchronize_session='fetch')            
+                #finAAAAAAA
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
@@ -118,6 +137,9 @@ def get_profile_id(id):
                     communes.name_commune=name_commune 
                     communes.rut = user.rut
                     communes.name_region = region
+                    #db.session.delete()
+                    #db.session.add(communes)
+                    #db.session.commit()
             db.session.commit()
             return jsonify("Profile updated"), 200
         else:
