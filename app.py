@@ -51,19 +51,19 @@ def login():
     if (re.search(ereg,request.json.get("email"))):
         user.email = request.json.get("email")
     else:
-        return jsonify("Formato de email erróneo"), 400
+        return jsonify("Formato de email erróneo."), 400
     #Checking password
     if (re.search(preg,request.json.get('password'))):
         pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
         user.password = pw_hash
     else:
-        return jsonify("Formato de contraseña errónea"), 400
+        return jsonify("Formato de contraseña errónea."), 400
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
     profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
 
     if user is None:             
-        return jsonify("Usuario no existe"), 404
+        return jsonify("Usuario no existe."), 404
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
         return jsonify({
@@ -72,7 +72,7 @@ def login():
             "access_token": access_token
         }),200
     else:
-        return jsonify("Ingresó mal la contraseña"), 400
+        return jsonify("Ha ingresado mal la contraseña."), 400
 
 
 #Editar un usuario
@@ -82,13 +82,8 @@ def get_profile_id(id):
         if id is not None:
             profile = Profile.query.filter_by(id=id).first()
             if profile is None :
-                return jsonify("Usuario no existe"), 404
+                return jsonify("Usuario no existe."), 404
             user = User.query.filter_by(id=profile.id).first()
-            #inicioAAAAA
-            #rut= Profile.query.filter_by(id=id).first()
-            #rut_client =rut.id_communes            
-            #comunas= Communes.query.filter_by(rut=profile.id_communes).first()
-            #finAAAAA
             #Para la primera etapa en name_region sera por defecto Region Metropolitana
             region= "Region Metropolitana"           
             #Regular expression that checks a valid phone
@@ -100,12 +95,12 @@ def get_profile_id(id):
                 pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
                 user.password = pw_hash
             else:
-                return jsonify("Formato de contraseña errónea"), 400
+                return jsonify("Formato de contraseña errónea."), 400
             #Checking phone
             if (re.search(phonereg,request.json.get('phone'))):
                 user.phone = request.json.get("phone")
             else:
-                return jsonify("Formato de teléfono erróneo"), 400          
+                return jsonify("Formato de teléfono erróneo."), 400          
            
             user.name_commune = request.json.get("name_commune")
             user.address = request.json.get("address")
@@ -116,20 +111,12 @@ def get_profile_id(id):
             profile.answer = request.json.get("answer")
 
             if profile.role != "client":
-                #inicioAAAAAAAA
-                #print(comunas)
                 rut_cliente= profile.id_communes
                 print(rut_cliente)
                 Communes.query.filter_by(
-                    rut = text(rut_cliente)
-                ).delete(synchronize_session=False)
-                #print(communas)
-                #).\
-                #delete(synchronize_session=False)                
-                db.session.commit()
-                #db.session.expire_all()
-                #).delete(synchronize_session='fetch')            
-                #finAAAAAAA
+                    rut = (rut_cliente)
+                ).delete(synchronize_session=False)               
+                db.session.commit()                
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
@@ -137,13 +124,12 @@ def get_profile_id(id):
                     communes.name_commune=name_commune 
                     communes.rut = user.rut
                     communes.name_region = region
-                    #db.session.delete()
-                    #db.session.add(communes)
-                    #db.session.commit()
+                    db.session.add(communes)
+                    db.session.commit()
             db.session.commit()
-            return jsonify("Profile updated"), 200
+            return jsonify("Su perfil ha sido actualizado."), 200
         else:
-            return jsonify("Usuario no existe"), 404
+            return jsonify("Usuario no existe."), 404
 
 #Crear un nuevo usuario          
 @app.route('/user/profile', methods=["GET", "POST"])
@@ -154,7 +140,7 @@ def get_profile():
         user = User.query.filter_by(email=email).first()
     
         if user != None:             
-            return jsonify("Ya existes como cliente. Ingresa a tu sesion y dirígete a editar perfil"), 404
+            return jsonify("Usted ya existe como cliente. Ingrese a su sesión y seleccione editar perfil."), 404
         #Para la primera etapa en name_region sera por defecto Region Metropolitana
         region= "Region Metropolitana"
         #Regular expression that checks a valid email
@@ -170,23 +156,23 @@ def get_profile():
         if (re.search(ereg,request.json.get("email"))):
             user.email = request.json.get("email")
         else:
-            return jsonify("Formato de email erróneo"), 400
+            return jsonify("Formato de email erróneo."), 400
         #Checking password
         if (re.search(preg,request.json.get('password'))):
             pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
             user.password = pw_hash
         else:
-            return jsonify("Formato de contraseña errónea"), 400
+            return jsonify("Formato de contraseña errónea."), 400
         #Checking rut
         if (re.search(rut,request.json.get('rut'))):
             user.rut = request.json.get("rut")
         else:
-            return jsonify("Formato de RUT erróneo"), 400
+            return jsonify("Formato de RUT erróneo."), 400
         #Checking phone
         if (re.search(phonereg,request.json.get('phone'))):
             user.phone = request.json.get("phone")
         else:
-            return jsonify("Formato de teléfono erróneo"), 400
+            return jsonify("Formato de teléfono erróneo."), 400
 
         user.full_name = request.json.get("full_name")
         user.last_name = request.json.get("last_name")
