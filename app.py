@@ -112,11 +112,9 @@ def get_profile_id(id):
 
             if profile.role != "client":
                 rut_cliente= profile.id_communes
-                print(rut_cliente)
                 Communes.query.filter_by(
                     rut = (rut_cliente)
-                ).delete(synchronize_session=False)               
-                db.session.commit()                
+                ).delete(synchronize_session=False)         
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
@@ -125,7 +123,6 @@ def get_profile_id(id):
                     communes.rut = user.rut
                     communes.name_region = region
                     db.session.add(communes)
-                    db.session.commit()
             db.session.commit()
             return jsonify("Su perfil ha sido actualizado."), 200
         else:
