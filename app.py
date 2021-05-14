@@ -8,6 +8,7 @@ from models import db, Services, Profile, Communes, Availability, Ratings, User,
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime, time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from sqlalchemy.sql import text
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -49,19 +50,19 @@ def login():
     if (re.search(ereg,request.json.get("email"))):
         user.email = request.json.get("email")
     else:
-        return "Formato de email erróneo", 400
+        return jsonify("Formato de email erróneo"), 400
     #Checking password
     if (re.search(preg,request.json.get('password'))):
         pw_hash = bcrypt.generate_password_hash(request.json.get("password"))
         user.password = pw_hash
     else:
-        return "Formato de contraseña errónea", 400
+        return jsonify("Formato de contraseña errónea"), 400
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
     profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
 
     if user is None:             
-        return jsonify("This user doesn't exist"), 404
+        return jsonify("Usuario no existe"), 404
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
         return jsonify({
@@ -70,7 +71,7 @@ def login():
             "access_token": access_token
         }),200
     else:
-        return "Ingresó mal la contraseña", 400
+        return jsonify("Ingresó mal la contraseña"), 400
 
 
 #Editar un usuario
@@ -82,7 +83,11 @@ def get_profile_id(id):
             if profile is None :
                 return jsonify("This user doesn't exist"), 200
             user = User.query.filter_by(id=profile.id).first()
-
+            #inicioAAAAA
+            #rut= Profile.query.filter_by(id=id).first()
+            #rut_client =rut.id_communes            
+            #comunas= Communes.query.filter_by(rut=profile.id_communes).first()
+            #finAAAAA
             #Para la primera etapa en name_region sera por defecto Region Metropolitana
             region= "Region Metropolitana"           
             #Regular expression that checks a valid phone
@@ -99,8 +104,7 @@ def get_profile_id(id):
             if (re.search(phonereg,request.json.get('phone'))):
                 user.phone = request.json.get("phone")
             else:
-                return "Formato de teléfono erróneo", 400
-            
+                return "Formato de teléfono erróneo", 400          
            
             user.name_commune = request.json.get("name_commune")
             user.address = request.json.get("address")
@@ -111,14 +115,30 @@ def get_profile_id(id):
             profile.answer = request.json.get("answer")
 
             if profile.role != "client":
+                #inicioAAAAAAAA
+                #print(comunas)
+                rut_cliente= profile.id_communes
+                print(rut_cliente)
+                Communes.query.filter_by(
+                    rut = text(rut_cliente)
+                ).delete(synchronize_session=False)
+                #print(communas)
+                #).\
+                #delete(synchronize_session=False)                
+                db.session.commit()
+                #db.session.expire_all()
+                #).delete(synchronize_session='fetch')            
+                #finAAAAAAA
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
                     communes=Communes()
                     communes.name_commune=name_commune 
                     communes.rut = user.rut
-                    communes.name_region = region 
-                    db.session.add(communes)       
+                    communes.name_region = region
+                    #db.session.delete()
+                    #db.session.add(communes)
+                    #db.session.commit()
             db.session.commit()
             return jsonify("Profile updated"), 200
         else:
