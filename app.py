@@ -6,9 +6,10 @@ from flask_script import Manager
 from flask_cors import CORS
 from models import db, Services, Profile, Communes, Availability, Ratings, User, Requests
 from flask_bcrypt import Bcrypt
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from sqlalchemy.sql import text
+import datetime
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -204,6 +205,14 @@ def get_profile():
         if profile.role != "client":
             profile.experience = request.json.get("experience")
             profile.id_communes= request.json.get("rut")
+            for day in range(15):
+                availability = Availability()
+                availability.date = datetime.date.today () + timedelta(days=day)
+                availability.morning = True
+                availability.afternoon = True
+                availability.evening = True
+                availability.id_user = request.json.get("email")
+                db.session.add(availability)
             attetion_communes = request.json.get("communes")
             for name_commune in attetion_communes:
                 communes=Communes()
@@ -265,7 +274,6 @@ def get_availability():
         availability = Availability()
         availability.id = request.json.get("id")             
         availability.date = request.json.get("date")
-        availability.hour = request.json.get("hour")
         db.session.add(availability)
         db.session.commit()
         return jsonify(availability.serialize_all_fields()), 200

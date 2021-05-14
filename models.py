@@ -34,7 +34,7 @@ class Profile(db.Model):
     id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
     id_communes = db.Column(db.String(10), db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=False)
     ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
-    availabilities = db.relationship('Availability', backref='profile', cascade='all, delete', lazy=True) 
+     
     requests = db.relationship('Requests', backref='profile', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
@@ -86,10 +86,12 @@ class Communes(db.Model):
 
 class Availability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(10), nullable=False) #default=db.func.current_timestamp())
-    hour = db.Column(db.String(10), nullable=False)
-    id_profile = db.Column (db.Integer, db.ForeignKey("profile.id", ondelete='CASCADE'), nullable=True)
-
+    date = db.Column(db.DateTime, nullable=False) #default=db.func.current_timestamp())
+    morning = db.Column(db.Boolean, nullable=False)
+    afternoon= db.Column(db.Boolean, nullable=False)
+    evening= db.Column(db.Boolean, nullable=False)
+    id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
+    
     def __repr__(self):
         return "<Availability %r>" % self.id
 
@@ -97,7 +99,9 @@ class Availability(db.Model):
         return {
         "id": self.id,                
         "date": self.date,
-        "hour":self.hour  
+        "morning":self.morning,  
+        "afternoon":self.afternoon,  
+        "evening":self.evening  
         }
 
     def serialize_strict(self):
@@ -140,6 +144,7 @@ class User(db.Model):
     address = db.Column(db.String(150), nullable=False)
     name_commune = db.Column(db.String(150), nullable=False)
     profiles = db.relationship('Profile', backref='user', cascade='all, delete', lazy=True) #uselist=False si la relacion es uno a uno
+    availabilities = db.relationship('Availability', backref='user', cascade='all, delete', lazy=True)
     
     def _repr_(self):
         return "<User %r>" % self.email
