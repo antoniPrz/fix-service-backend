@@ -323,6 +323,66 @@ def get_requests():
         return jsonify(requests), 200
 
 
+
+@app.route("/query/client", methods=["GET", "POST"])
+def get_query():
+    if request.method == "POST":
+         
+        return jsonify(requests.serialize_all_fields()), 200
+
+    if request.method == "GET": 
+        requests = Requests()   
+        name_specialty = request.json.get("name_specialty")
+        name_commune = request.json.get("name_commune")
+        date= request.json.get("date")
+        #hora recibida del front que se transforma en morning, afternoon o evening
+        hour = request.json.get("hour") 
+        morning = False
+        afternoon = False
+        evening = False
+
+        if hour == "9": 
+            morning= True
+            day="morning"
+        elif hour == "12":
+            afternoon=True
+            day="afternoon"
+        elif hour == "15":
+            evening = True
+            day="evening"
+
+        
+
+        user = User.query.filter_by(email=text(name_specialty))
+        commune = Communes.query.filter_by(name_commune = text(name_commune))
+        profile = Profile.query.filter_by(id_communes = Communes.rut)
+        availability = Availability.query.filter_by(date = text(date) , id_user = User.email)
+        print (User.email) #, Communes.name_commune, Profile.id_communes, Availability.id_user)
+
+
+#SELECT DISTINCT a.email, a.full_name, a.last_name, b.experience, a.phone, c.name_specialty,
+#    d.name_commune, e.date, e.morning
+#FROM user a, profile b, specialty c, communes d, availability e
+#WHERE c.name_specialty='electricista' AND d.name_commune='Recoleta' 
+#    AND e.date = '2021-05-23 00:00:00.000000' 
+#    AND e.morning = True 
+#    AND a.rut = b.id_communes
+#    AND b.id_communes = d.rut
+#    AND a.email = c.id_user
+#    AND a.email = e.id_user
+#    AND b.role <> 'client';
+
+
+
+
+        #user = User.query.filter_by(email=email).first()
+        #profile = Profile.query.filter_by(id_user=request.json.get("email")).first()        
+        return jsonify("realizado"), 200
+
+
+
+
+
 if __name__ == "__main__":
     manager.run()
 
