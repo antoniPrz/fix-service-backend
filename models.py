@@ -145,6 +145,7 @@ class User(db.Model):
     name_commune = db.Column(db.String(150), nullable=False)
     profiles = db.relationship('Profile', backref='user', cascade='all, delete', lazy=True) #uselist=False si la relacion es uno a uno
     availabilities = db.relationship('Availability', backref='user', cascade='all, delete', lazy=True)
+    specialties = db.relationship('Specialty', backref='user', cascade='all, delete', lazy=True)
     
     def _repr_(self):
         return "<User %r>" % self.email
@@ -204,4 +205,24 @@ class Requests(db.Model):
         "id_profile": self.id_profile,  
         "id_commune": self.id_commune,
         "request_status": self.request_status,
+        }
+
+class Specialty(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name_specialty = db.Column(db.String(20), nullable=True)
+    id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
+   
+    def __repr__(self):
+        return "<Specialty %r>" % self.id
+
+    def serialize_all_fields(self):
+        return {
+        "id":self.id,
+        "name_specialty": self.name_specialty,                
+        "id_user": self.id_user 
+        }
+
+    def serialize_strict(self):
+        return {
+        "id":self.id
         }
