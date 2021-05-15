@@ -235,7 +235,7 @@ def get_profile():
 
 
 @app.route("/service/default", methods=["GET", "POST"])
-def get_services():
+def get_services_default():
     if request.method == "POST":
         service = Services()
         service.id = request.json.get("id")
@@ -250,11 +250,13 @@ def get_services():
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
         counter = 0
+        
         for specialty in specialties:
             profile = Profile.query.filter_by(id_user=specialty.id_user).first()
             availability = Availability.query.filter_by(date=date, morning=True, id_user=specialty.id_user).first()
             user=User.query.filter_by(email=specialty.id_user).first()
-            if user !=None and availability != None:
+            
+            if user !=None and availability != None and profile != None:
                 counter = counter+1
                 answer.append({
                     'specialty':specialty.serialize_all_fields(), 
@@ -265,7 +267,44 @@ def get_services():
         if counter > 0:    
             return jsonify(answer), 200
         else:
-            return jsonify(date), 200
+            return jsonify("No hay especialistas disponibles"), 200
+
+@app.route("/service", methods=["POST"])
+def get_services():
+    if request.method == "POST":
+        specialties = Specialty.query.filter_by(name_specialty=request.json.get("name_specialty")).all()
+        communes = Communes.query.filter_by(name_commune=request.json.get("name_commune")).all()
+        answer = []
+        date = request.json.get("date")
+        counter = 0
+        for specialty in specialties:
+            for commune in communes:
+                profile = Profile.query.filter_by(id_user=specialty.id_user, id_communes = commune.rut).first()
+            
+                availability= None
+                if request.json.get("morning") == True and request.json.get("afternoon") == False and request.json.get("evening") == False:
+                    availability = Availability.query.filter_by(date=date, morning=True, id_user=specialty.id_user).first()
+            
+                elif request.json.get("morning") == False and request.json.get("afternoon") == True and request.json.get("evening") == False:
+                    availability = Availability.query.filter_by(date=date, afternoon=True, id_user=specialty.id_user).first()
+            
+                elif request.json.get("morning") == False and request.json.get("afternoon") == False and request.json.get("evening") == True:
+                    availability = Availability.query.filter_by(date=date, evening=True, id_user=specialty.id_user).first()
+           
+                user=User.query.filter_by(email=specialty.id_user).first()
+            
+                if user !=None and availability != None and profile != None:
+                    counter = counter+1
+                    answer.append({
+                        'specialty':specialty.serialize_all_fields(), 
+                        'user':user.serialize_all_fields(), 
+                        'availability': availability.serialize_strict(),
+                        'profile': profile.serialize_all_fields()
+                        })
+        if counter > 0:    
+            return jsonify(answer), 200
+        else:
+            return jsonify("No hay usuarios disponibles"), 200
 #Cesar fin
 
 @app.route("/communes", methods=["GET", "POST"])
