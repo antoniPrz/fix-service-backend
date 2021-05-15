@@ -103,11 +103,12 @@ class Availability(db.Model):
         "afternoon":self.afternoon,  
         "evening":self.evening  
         }
-
+    
     def serialize_strict(self):
         return {
         "id": self.id,
-        "date": self.date
+        "date": self.date,
+        "morning":self.morning
         }
 
 

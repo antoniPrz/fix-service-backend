@@ -200,7 +200,8 @@ def get_profile():
             profile.id_communes= request.json.get("rut")
             for day in range(15):
                 availability = Availability()
-                availability.date = datetime.date.today () + timedelta(days=day)
+                date = datetime.date.today () + timedelta(days=day)
+                availability.date=date
                 availability.morning = True
                 availability.afternoon = True
                 availability.evening = True
@@ -231,10 +232,9 @@ def get_profile():
         profiles = Profile.query.all()
         profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
         return jsonify(profiles), 200
-#Cesar fin
 
 
-@app.route("/service", methods=["GET", "POST"])
+@app.route("/service/default", methods=["GET", "POST"])
 def get_services():
     if request.method == "POST":
         service = Services()
@@ -245,10 +245,28 @@ def get_services():
         return jsonify(service.serialize_all_fields()), 200
 
     if request.method == "GET":
-        services = Services.query.all()
-        services = list(map(lambda service: service.serialize_strict(), services))
-        return jsonify(services), 200
-
+        specialties = Specialty.query.filter_by(name_specialty='pintor').all()
+        answer = []
+        date = datetime.date.today() + timedelta(days=1)
+        date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
+        counter = 0
+        for specialty in specialties:
+            profile = Profile.query.filter_by(id_user=specialty.id_user).first()
+            availability = Availability.query.filter_by(date=date, morning=True, id_user=specialty.id_user).first()
+            user=User.query.filter_by(email=specialty.id_user).first()
+            if user !=None and availability != None:
+                counter = counter+1
+                answer.append({
+                    'specialty':specialty.serialize_all_fields(), 
+                    'user':user.serialize_all_fields(), 
+                    'availability': availability.serialize_strict(),
+                    'profile': profile.serialize_all_fields()
+                    })
+        if counter > 0:    
+            return jsonify(answer), 200
+        else:
+            return jsonify(date), 200
+#Cesar fin
 
 @app.route("/communes", methods=["GET", "POST"])
 def get_communes():
