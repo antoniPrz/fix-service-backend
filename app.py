@@ -40,7 +40,6 @@ def main():
 def login():
     email = request.json.get("email")
     password = request.json.get("password")
-    rut= request.json.get("rut")
 
     #Regular expression that checks a valid email
     ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
@@ -111,16 +110,16 @@ def get_profile_id(id):
             profile.answer = request.json.get("answer")
 
             if profile.role != "client":
-                rut_cliente= profile.id_communes
+                email_client= profile.id_communes
                 Communes.query.filter_by(
-                    rut = (rut_cliente)
+                    email = (email_client)
                 ).delete(synchronize_session=False)         
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
                 for name_commune in attetion_communes:
                     communes=Communes()
                     communes.name_commune=name_commune 
-                    communes.rut = user.rut
+                    communes.email = user.email
                     communes.name_region = region
                     db.session.add(communes)
                 
@@ -193,11 +192,10 @@ def get_profile():
         profile.question = request.json.get("question")
         profile.answer = request.json.get("answer")
         profile.id_user = request.json.get("email")
-        profile.id_communes= request.json.get("rut")
 
         if profile.role != "client":
             profile.experience = request.json.get("experience")
-            profile.id_communes= request.json.get("rut")
+            profile.id_communes= request.json.get("email")
             for day in range(15):
                 availability = Availability()
                 date = datetime.date.today () + timedelta(days=day)
@@ -211,7 +209,7 @@ def get_profile():
             for name_commune in attetion_communes:
                 communes=Communes()
                 communes.name_commune=name_commune
-                communes.rut = request.json.get("rut")
+                communes.email = request.json.get("email")
                 communes.name_region = region
                 db.session.add(communes)
             specialties = request.json.get("name_specialty")
@@ -279,7 +277,7 @@ def get_services():
         counter = 0
         for specialty in specialties:
             for commune in communes:
-                profile = Profile.query.filter_by(id_user=specialty.id_user, id_communes = commune.rut).first()
+                profile = Profile.query.filter_by(id_user=specialty.id_user, id_communes = commune.email).first()
             
                 availability= None
                 if request.json.get("morning") == True and request.json.get("afternoon") == False and request.json.get("evening") == False:
