@@ -265,7 +265,7 @@ def get_services_default():
         if counter > 0:    
             return jsonify(answer), 200
         else:
-            return jsonify("No hay especialistas disponibles"), 200
+            return jsonify("No hay especialistas disponibles."), 200
 
 @app.route("/service", methods=["POST"])
 def get_services():
@@ -302,7 +302,7 @@ def get_services():
         if counter > 0:    
             return jsonify(answer), 200
         else:
-            return jsonify("No hay usuarios disponibles"), 200
+            return jsonify("No hay especialistas disponibles."), 200
 #Cesar fin
 
 @app.route("/communes", methods=["GET", "POST"])
