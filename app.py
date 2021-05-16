@@ -40,15 +40,20 @@ def main():
 def login():
     email = request.json.get("email")
     password = request.json.get("password")
+    #validacion al informar email y password
+    if email == "":
+        return jsonify("Debe informar su email."), 400
+    if password == "":
+        return jsonify("Debe informar su contraseña."), 400            
 
     #Regular expression that checks a valid email
     ereg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     #Regular expression that checks a valid password
     preg = '^.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
     user = User()
-    #Checking email
+    #Checking email     
     if (re.search(ereg,request.json.get("email"))):
-        user.email = request.json.get("email")
+        user.email = request.json.get("email")               
     else:
         return jsonify("Formato de email erróneo."), 400
     #Checking password
@@ -108,6 +113,11 @@ def get_profile_id(id):
             profile.phone = request.json.get("phone")
             profile.question = request.json.get("question")
             profile.answer = request.json.get("answer")
+            #validacion entrada
+            if user.name_commune == "":
+                return jsonify("Debe informar su comuna de residencia."), 400  
+            if user.address == "":
+                return jsonify("Debe informar su dirección."), 400                               
 
             if profile.role != "client":
                 email_client= profile.id_communes
@@ -121,8 +131,7 @@ def get_profile_id(id):
                     communes.name_commune=name_commune 
                     communes.email = user.email
                     communes.name_region = region
-                    db.session.add(communes)
-                
+                    db.session.add(communes)                
                 Specialty.query.filter_by(
                     id_user = (user.email)
                 ).delete(synchronize_session=False)
@@ -130,7 +139,7 @@ def get_profile_id(id):
                 for name_specialty in specialties:
                     specialty=Specialty ()
                     specialty.name_specialty=name_specialty
-                    specialty.id_user = request.json.get("email")
+                    specialty.id_user = user.email
                     db.session.add(specialty)
 
             db.session.commit()
@@ -144,10 +153,14 @@ def get_profile():
     if request.method == "POST":
         #valida que el usuario ya exista como cliente o especialista
         email = request.json.get("email")
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()    
     
         if user != None:             
             return jsonify("Usted ya existe como cliente. Ingrese a su sesión y seleccione editar perfil."), 404
+
+        #valida que venga informado el email
+        if email == "":
+            return jsonify("Debe informar su email."), 400                  
         #Para la primera etapa en name_region sera por defecto Region Metropolitana
         region= "Region Metropolitana"
         #Regular expression that checks a valid email
@@ -158,7 +171,8 @@ def get_profile():
         phonereg = '^(56)?(\s?)(0?9)(\s?)[9876543]\d{7}$'
         #Regular expression that checks a valid rut
         rut = '^[1-9]{1}[0-9]{6,7}-[0-9kK]{1}$'
-        user = User()
+        user = User() 
+
         #Checking email
         if (re.search(ereg,request.json.get("email"))):
             user.email = request.json.get("email")
@@ -174,17 +188,26 @@ def get_profile():
         if (re.search(rut,request.json.get('rut'))):
             user.rut = request.json.get("rut")
         else:
-            return jsonify("Formato de RUT erróneo."), 400
+            return jsonify("Formato de RUT erróneo."), 400            
         #Checking phone
         if (re.search(phonereg,request.json.get('phone'))):
             user.phone = request.json.get("phone")
         else:
             return jsonify("Formato de teléfono erróneo."), 400
 
-        user.full_name = request.json.get("full_name")
+        user.full_name = request.json.get("full_name")     
         user.last_name = request.json.get("last_name")
         user.address = request.json.get("address")
         user.name_commune = request.json.get("name_commune")
+        #validacion campos de entrada
+        if user.full_name == "":
+            return jsonify("Debe informar su nombre."), 400   
+        if user.last_name == "":
+            return jsonify("Debe informar su apellido."), 400  
+        if user.address == "":
+            return jsonify("Debe informar su dirección."), 400  
+        if user.name_commune == "":
+            return jsonify("Debe informar su comuna de residencia."), 400                                              
         db.session.add(user)
 
         profile = Profile()
@@ -259,7 +282,7 @@ def get_services_default():
                 answer.append({
                     'specialty':specialty.serialize_all_fields(), 
                     'user':user.serialize_all_fields(), 
-                    'availability': availability.serialize_strict(),
+                    'availability': availability.serialize_all_fields(),
                     'profile': profile.serialize_all_fields()
                     })
         if counter > 0:    
@@ -270,10 +293,19 @@ def get_services_default():
 @app.route("/service", methods=["POST"])
 def get_services():
     if request.method == "POST":
-        specialties = Specialty.query.filter_by(name_specialty=request.json.get("name_specialty")).all()
-        communes = Communes.query.filter_by(name_commune=request.json.get("name_commune")).all()
+        speciality = request.json.get("name_specialty")
+        commun = request.json.get("name_commune")
+        specialties = Specialty.query.filter_by(name_specialty=speciality).all()
+        communes = Communes.query.filter_by(name_commune=commun).all()
         answer = []
         date = request.json.get("date")
+        #validaciones de entrada
+        if speciality == "":
+            return jsonify("Debe informar la especialidad del trabajo a realizar."), 400 
+        if commun == "":
+            return jsonify("Debe informar la comuna donde el especialista irá."), 400       
+        if date == "":
+            return jsonify("Debe informar la fecha cuando se realizará el trabajo."), 400       
         counter = 0
         for specialty in specialties:
             for commune in communes:
@@ -296,7 +328,7 @@ def get_services():
                     answer.append({
                         'specialty':specialty.serialize_all_fields(), 
                         'user':user.serialize_all_fields(), 
-                        'availability': availability.serialize_strict(),
+                        'availability': availability.serialize_all_fields(),
                         'profile': profile.serialize_all_fields()
                         })
         if counter > 0:    
