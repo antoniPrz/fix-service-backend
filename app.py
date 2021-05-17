@@ -260,18 +260,11 @@ def get_profile():
         return jsonify(profiles), 200
 
 
-@app.route("/service/default", methods=["GET", "POST"])
+@app.route("/service/default", methods=["GET"])
 def get_services_default():
-    if request.method == "POST":
-        service = Services()
-        service.id = request.json.get("id")
-        service.name_service = request.json.get("name_service")
-        db.session.add(service)
-        db.session.commit()
-        return jsonify(service.serialize_all_fields()), 200
-
+    
     if request.method == "GET":
-        specialties = Specialty.query.filter_by(name_specialty='pintor').all()
+        specialties = Specialty.query.filter_by(name_specialty='carpintero').all()
         answer = []
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
@@ -304,6 +297,7 @@ def get_services():
         communes = Communes.query.filter_by(name_commune=commun).all()
         answer = []
         date = request.json.get("date")
+        date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
         #validaciones de entrada
         if speciality == "":
             return jsonify("Debe informar la especialidad del trabajo a realizar."), 400 
@@ -339,7 +333,7 @@ def get_services():
         if counter > 0:    
             return jsonify(answer), 200
         else:
-            return jsonify("No hay especialistas disponibles."), 200
+            return jsonify("No hay especialistas disponibles backend"), 200
 #Cesar fin
 
 @app.route("/communes", methods=["GET", "POST"])
@@ -400,7 +394,7 @@ def get_requests(id):
         
         date = request.json.get("date")
         y, m, d = date.split('-')
-        date_ = datetime.datetime(int(y), int(m), int(d))                  
+        date_rv = datetime.datetime(int(y), int(m), int(d))                  
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
@@ -409,7 +403,7 @@ def get_requests(id):
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
         requests.address = request.json.get("address")
-        requests.date = date_
+        requests.date = date_rv
         requests.hour = request.json.get("hour")
         requests.id_user = user.email
         requests.id_profile = request.json.get("id_profile")
