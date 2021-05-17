@@ -153,10 +153,15 @@ def get_profile():
     if request.method == "POST":
         #valida que el usuario ya exista como cliente o especialista
         email = request.json.get("email")
-        user = User.query.filter_by(email=email).first()    
+        rut_reg =request.json.get("rut")
+        user = User.query.filter_by(email=email).first() 
+        rut_user = User.query.filter_by(rut=rut_reg).first()    
     
         if user != None:             
             return jsonify("Usted ya existe como cliente. Ingrese a su sesión y seleccione editar perfil."), 404
+
+        if rut_user != None:             
+            return jsonify("El rut ingresado ya existe en nuestros registros."), 404
 
         #valida que venga informado el email
         if email == "":
@@ -385,30 +390,37 @@ def get_ratings():
         ratings = list(map(lambda rating: rating.serialize_strict(), ratings))
         return jsonify(ratings), 200
 
-
-@app.route("/requests", methods=["GET", "POST"])
-def get_requests():
+@app.route("/user/requests/<int:id>", methods=["GET", "POST"])
+def get_requests(id):
     if request.method == "POST":
+        if id is not None:
+            user = User.query.filter_by(id=id).first()
+            if user is None :
+                return jsonify("Usuario no existe."), 404
+        
+        date = request.json.get("date")
+        y, m, d = date.split('-')
+        date_ = datetime.datetime(int(y), int(m), int(d))                  
         requests = Requests()
-        requests.id = request.json.get("id")
-        requests.id_commune = request.json.get("id_commune")
+        requests.name_specialty = request.json.get("name_specialty")
+        requests.name_commune = request.json.get("name_commune")
         requests.request_status = request.json.get("request_status")
         requests.full_name = request.json.get("full_name")
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
         requests.address = request.json.get("address")
-        requests.date = request.json.get("date")
+        requests.date = date_
         requests.hour = request.json.get("hour")
-
+        requests.id_user = user.email
+        requests.id_profile = request.json.get("id_profile")
         db.session.add(requests)
         db.session.commit()
-        return jsonify(requests.serialize_all_fields()), 200
+        return jsonify({'requests':requests.serialize_all_fields()}), 200
 
     if request.method == "GET":
         requests = Requests.query.all()
         requests = list(map(lambda request: request.serialize_strict(), requests))
         return jsonify(requests), 200
-
 
 
 if __name__ == "__main__":

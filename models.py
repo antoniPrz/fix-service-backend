@@ -7,7 +7,7 @@ db = SQLAlchemy()
 class Services(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     name_service = db.Column(db.String(50), nullable=False)
-    requests = db.relationship('Requests', backref='services', cascade='all, delete', lazy=True) 
+#    requests = db.relationship('Requests', backref='services', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
         return "<Services %r>" % self.name_service
@@ -33,8 +33,7 @@ class Profile(db.Model):
     experience = db.Column(db.String(250), nullable=True)
     id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
     id_communes = db.Column(db.String(30), db.ForeignKey("communes.id", ondelete='CASCADE'), nullable=True)
-    ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True) 
-     
+    ratings = db.relationship('Ratings', backref='profile', cascade='all, delete', lazy=True)      
     requests = db.relationship('Requests', backref='profile', cascade='all, delete', lazy=True) 
 
     def __repr__(self):
@@ -147,6 +146,7 @@ class User(db.Model):
     profiles = db.relationship('Profile', backref='user', cascade='all, delete', lazy=True) #uselist=False si la relacion es uno a uno
     availabilities = db.relationship('Availability', backref='user', cascade='all, delete', lazy=True)
     specialties = db.relationship('Specialty', backref='user', cascade='all, delete', lazy=True)
+    requests = db.relationship('Requests', backref='user', cascade='all, delete', lazy=True) 
     
     def _repr_(self):
         return "<User %r>" % self.email
@@ -172,40 +172,46 @@ class User(db.Model):
 
 class Requests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    id_commune = db.Column(db.Integer, nullable=False)
+    name_specialty = db.Column(db.String(20), nullable=False)
+    name_commune = db.Column(db.String(150), nullable=False)
     request_status = db.Column(db.String(10), nullable=False)
     full_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(90), nullable=False)
     contact_phone = db.Column(db.Integer, nullable=False)
     address = db.Column(db.String(150), nullable=False)
-    date = db.Column(db.String(10), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
     hour = db.Column(db.String(10), nullable=False)
-    id_profile = db.Column (db.Integer, db.ForeignKey("profile.id", ondelete='CASCADE'), nullable=True)
-    id_service = db.Column (db.Integer, db.ForeignKey("services.id", ondelete='CASCADE'), nullable=True)
+    id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
+    id_profile = db.Column(db.String(30), db.ForeignKey("profile.id", ondelete='CASCADE'), nullable=False)
+
+#    id_service = db.Column (db.Integer, db.ForeignKey("services.id", ondelete='CASCADE'), nullable=True)
 
     def __repr__(self):
-        return "<Requests %r>" % self.request_status
+        return "<Requests %r>" % self.id
 
     def serialize_all_fields(self):
         return {
         "id": self.id,
-        "id_profile": self.id_profile,
-        "id_commune": self.id_commune,
+        "name_specialty": self.name_specialty,
+        "name_commune": self.name_commune,
         "request_status": self.request_status,
         "full_name":self.full_name,  
         "last_name": self.last_name,
         "contact_phone":self.contact_phone,  
         "address": self.address,  
         "date":self.date,
-        "hour": self.hour                             
+        "hour": self.hour,
+        "id_user": self.id_user,
+        "id_profile": self.id_profile
         }
 
     def serialize_strict(self):
         return {
         "id": self.id,
-        "id_profile": self.id_profile,  
-        "id_commune": self.id_commune,
         "request_status": self.request_status,
+        "name_specialty": self.name_specialty,
+        "id_user": self.id_user,        
+        "id_profile": self.id_profile
         }
 
 class Specialty(db.Model):
