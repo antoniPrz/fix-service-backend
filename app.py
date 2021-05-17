@@ -392,13 +392,14 @@ def get_requests(id):
             if user is None :
                 return jsonify("Usuario no existe."), 404
         
+        request_status ="pendiente"
         date = request.json.get("date")
         y, m, d = date.split('-')
         date_rv = datetime.datetime(int(y), int(m), int(d))                  
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
-        requests.request_status = request.json.get("request_status")
+        requests.request_status = request_status
         requests.full_name = request.json.get("full_name")
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
