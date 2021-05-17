@@ -393,9 +393,11 @@ def get_requests(id):
                 return jsonify("Usuario no existe."), 404
         
         request_status ="pendiente"
+        #date = request.json.get("date") #2021-05-22
         date = request.json.get("date")
-        y, m, d = date.split('-')
-        date_rv = datetime.datetime(int(y), int(m), int(d))                  
+        date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
+        #y, m, d = date.split('-')
+        #date_rv = datetime.datetime(int(y), int(m), int(d))                  
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
@@ -404,7 +406,8 @@ def get_requests(id):
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
         requests.address = request.json.get("address")
-        requests.date = date_rv
+        #requests.date = date_rv
+        requests.date = date
         requests.hour = request.json.get("hour")
         requests.id_user = user.email
         requests.id_profile = request.json.get("id_profile")
