@@ -401,9 +401,12 @@ def get_requests(id):
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
         requests.request_status = request_status
-        requests.full_name = request.json.get("full_name")
-        requests.last_name = request.json.get("last_name")
-        requests.contact_phone = request.json.get("contact_phone")
+        requests.full_name_user = user.full_name
+        requests.last_name_user = user.last_name
+        requests.contact_phone_user = user.phone
+        requests.full_name_profile = request.json.get("full_name_profile")
+        requests.last_name_profile = request.json.get("last_name_profile")
+        requests.contact_phone_profile = request.json.get("contact_phone_profile")
         requests.address = request.json.get("address")
         requests.date = date
         requests.hour = hour
