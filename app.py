@@ -259,35 +259,39 @@ def get_profile():
         profiles = list(map(lambda profile: profile.serialize_strict(), profiles))
         return jsonify(profiles), 200
 
-
+#Devuelve por defecto lista de carpinteros disponibles para mañana
 @app.route("/service/default", methods=["GET"])
 def get_services_default():
     
     if request.method == "GET":
-        specialties = Specialty.query.filter_by(name_specialty='carpintero').all()
+        specialties = Specialty.query.all()
         answer = []
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
         counter = 0
+        communes = Communes.query.all() 
         
         for specialty in specialties:
-            profile = Profile.query.filter_by(id_user=specialty.id_user).first()
-            availability = Availability.query.filter_by(date=date, morning=True, id_user=specialty.id_user).first()
-            user=User.query.filter_by(email=specialty.id_user).first()
-            
-            if user !=None and availability != None and profile != None:
-                counter = counter+1
-                answer.append({
-                    'specialty':specialty.serialize_all_fields(), 
-                    'user':user.serialize_all_fields(), 
-                    'availability': availability.serialize_all_fields(),
-                    'profile': profile.serialize_all_fields()
-                    })
+            for commune in communes:
+                profile = Profile.query.filter_by(id_user=specialty.id_user, id_communes = commune.email).first()
+                availability = Availability.query.filter_by(date=date, id_user=specialty.id_user).first()
+                user=User.query.filter_by(email=specialty.id_user).first()
+                
+                if user !=None and availability != None and profile != None:
+                    counter = counter+1
+                    answer.append({
+                        'specialty':specialty.serialize_all_fields(), 
+                        'user':user.serialize_all_fields(), 
+                        'availability': availability.serialize_all_fields(),
+                        'profile': profile.serialize_all_fields(),
+                        'commune': commune.serialize_all_fields()
+                        })
         if counter > 0:    
             return jsonify(answer), 200
         else:
             return jsonify("No hay especialistas disponibles."), 200
 
+#Devuelve lista de especialistas disponibles
 @app.route("/service", methods=["POST"])
 def get_services():
     if request.method == "POST":
@@ -300,9 +304,9 @@ def get_services():
         date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
         #validaciones de entrada
         if speciality == "":
-            return jsonify("Debe informar la especialidad del trabajo a realizar."), 400 
+            specialties = Specialty.query.all()
         if commun == "":
-            return jsonify("Debe informar la comuna donde el especialista irá."), 400       
+            communes = Communes.query.all()       
         if date == "":
             return jsonify("Debe informar la fecha cuando se realizará el trabajo."), 400       
         counter = 0
@@ -319,6 +323,9 @@ def get_services():
             
                 elif request.json.get("morning") == False and request.json.get("afternoon") == False and request.json.get("evening") == True:
                     availability = Availability.query.filter_by(date=date, evening=True, id_user=specialty.id_user).first()
+                
+                elif request.json.get("morning") == False and request.json.get("afternoon") == False and request.json.get("evening") == False:
+                    availability = Availability.query.filter_by(date=date, id_user=specialty.id_user).first()
            
                 user=User.query.filter_by(email=specialty.id_user).first()
             
@@ -328,7 +335,8 @@ def get_services():
                         'specialty':specialty.serialize_all_fields(), 
                         'user':user.serialize_all_fields(), 
                         'availability': availability.serialize_all_fields(),
-                        'profile': profile.serialize_all_fields()
+                        'profile': profile.serialize_all_fields(),
+                        'commune': commune.serialize_all_fields()
                         })
         if counter > 0:    
             return jsonify(answer), 200
@@ -384,6 +392,7 @@ def get_ratings():
         ratings = list(map(lambda rating: rating.serialize_strict(), ratings))
         return jsonify(ratings), 200
 
+#Crear una solicitud
 @app.route("/user/requests/<int:id>", methods=["GET", "POST"])
 def get_requests(id):
     if request.method == "POST":
