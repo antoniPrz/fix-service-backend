@@ -175,9 +175,12 @@ class Requests(db.Model):
     name_specialty = db.Column(db.String(20), nullable=False)
     name_commune = db.Column(db.String(150), nullable=False)
     request_status = db.Column(db.String(10), nullable=False)
-    full_name = db.Column(db.String(60), nullable=False)
-    last_name = db.Column(db.String(90), nullable=False)
-    contact_phone = db.Column(db.Integer, nullable=False)
+    full_name_user = db.Column(db.String(60), nullable=False)
+    last_name_user = db.Column(db.String(90), nullable=False)
+    contact_phone_user = db.Column(db.Integer, nullable=False)
+    full_name_profile = db.Column(db.String(60), nullable=False)
+    last_name_profile = db.Column(db.String(90), nullable=False)
+    contact_phone_profile = db.Column(db.Integer, nullable=False)    
     address = db.Column(db.String(150), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     hour = db.Column(db.String(10), nullable=False)
@@ -195,9 +198,12 @@ class Requests(db.Model):
         "name_specialty": self.name_specialty,
         "name_commune": self.name_commune,
         "request_status": self.request_status,
-        "full_name":self.full_name,  
-        "last_name": self.last_name,
-        "contact_phone":self.contact_phone,  
+        "full_name_user":self.full_name_user,  
+        "last_name_user": self.last_name_user,
+        "contact_phone_user":self.contact_phone_user,
+        "full_name_profile":self.full_name_profile,  
+        "last_name_profile": self.last_name_profile,
+        "contact_phone_profile":self.contact_phone_profile,         
         "address": self.address,  
         "date":self.date,
         "hour": self.hour,
