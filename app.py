@@ -422,7 +422,7 @@ def get_requests(id):
         requests.id_user = user.email
         requests.id_profile = id_profile
         db.session.add(requests)
-
+        #busca el registro en Availability segun el especialista y la fecha
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
             ).first()
@@ -438,7 +438,7 @@ def get_requests(id):
             morning = Availability.morning
             afternoon = Availability.afternoon
             evening =False                        
-        
+        #realiza update a la tabla Availability para cambiar el estado (False) del dia seleccionado 
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
