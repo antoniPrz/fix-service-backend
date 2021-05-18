@@ -393,11 +393,10 @@ def get_requests(id):
                 return jsonify("Usuario no existe."), 404
         
         request_status ="pendiente"
-        #date = request.json.get("date") #2021-05-22
+        hour = request.json.get("hour")
+        id_profile = request.json.get("id_profile")
         date = request.json.get("date")
         date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
-        #y, m, d = date.split('-')
-        #date_rv = datetime.datetime(int(y), int(m), int(d))                  
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
@@ -406,12 +405,31 @@ def get_requests(id):
         requests.last_name = request.json.get("last_name")
         requests.contact_phone = request.json.get("contact_phone")
         requests.address = request.json.get("address")
-        #requests.date = date_rv
         requests.date = date
-        requests.hour = request.json.get("hour")
+        requests.hour = hour
         requests.id_user = user.email
-        requests.id_profile = request.json.get("id_profile")
+        requests.id_profile = id_profile
         db.session.add(requests)
+
+        db.session.query(Availability).filter_by(
+            id_user=id_profile,date=request.json.get("date")
+            ).first()
+        if hour == 'morning':
+            morning = False
+            afternoon = Availability.afternoon
+            evening = Availability.evening
+        elif hour == 'afternoon':
+            morning= Availability.morning
+            afternoon = False
+            evening = Availability.evening
+        elif hour == 'evening':
+            morning = Availability.morning
+            afternoon = Availability.afternoon
+            evening =False                        
+        
+        db.session.query(Availability).filter_by(
+            id_user=id_profile,date=request.json.get("date")
+            ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
         db.session.commit()
         return jsonify({'requests':requests.serialize_all_fields()}), 200
 
