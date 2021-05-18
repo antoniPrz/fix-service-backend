@@ -264,7 +264,7 @@ def get_profile():
 def get_services_default():
     
     if request.method == "GET":
-        specialties = Specialty.query.all()
+        specialties = Specialty.query.filter_by(name_specialty="pintor").all()
         answer = []
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
