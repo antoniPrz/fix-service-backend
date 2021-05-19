@@ -264,7 +264,7 @@ def get_profile():
 def get_services_default():
     
     if request.method == "GET":
-        specialties = Specialty.query.all()
+        specialties = Specialty.query.filter_by(name_specialty="pintor").all()
         answer = []
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
@@ -397,8 +397,11 @@ def get_ratings():
 def get_requests():
     if request.method == "POST":
         id = request.json.get("id")
+<<<<<<< HEAD
         if id is None:
             return jsonify("Cliente no viene informado. Por favor ingrese nuevamente a la aplicacion."), 404
+=======
+>>>>>>> 9d0985832bf3df9b7680dd7cbd104e1d991811d3
         if id is not None:
             user = User.query.filter_by(id=id).first()
             if user is None :
