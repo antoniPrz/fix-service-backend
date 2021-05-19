@@ -393,19 +393,43 @@ def get_ratings():
         return jsonify(ratings), 200
 
 #Crear una solicitud
-@app.route("/user/requests/<int:id>", methods=["GET", "POST"])
-def get_requests(id):
+@app.route("/user/requests", methods=["GET", "POST"])
+def get_requests():
     if request.method == "POST":
+        id = request.json.get("id")
+        if id is None:
+            return jsonify("Cliente no viene informado. Por favor ingrese nuevamente a la aplicacion."), 404
         if id is not None:
             user = User.query.filter_by(id=id).first()
             if user is None :
-                return jsonify("Usuario no existe."), 404
-        
+                return jsonify("Cliente no viene informado. Por favor ingrese nuevamente a la aplicacion."), 404
         request_status ="pendiente"
         hour = request.json.get("hour")
         id_profile = request.json.get("id_profile")
+        #valida que venga informada la fecha
+        if request.json.get("date") is None or request.json.get("date") == '':
+            return jsonify("La fecha no viene informada. Por favor realizar nuevamente la solicitud."), 404        
         date = request.json.get("date")
         date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
+        #valida que venga informada la especialidad
+        if request.json.get("name_specialty") is None or request.json.get("name_specialty") == '':
+            return jsonify("La especialidad no viene informada. Por favor realizar nuevamente la solicitud."), 404
+        #valida que venga informada la comuna
+        if request.json.get("name_commune") is None or request.json.get("name_commune") == "":
+            return jsonify("La comuna no viene informada. Por favor realizar nuevamente la solicitud."), 404
+        #valida que venga informado el horario
+        if hour is None or hour == '':
+            return jsonify("El horario no viene informado. Por favor realizar nuevamente la solicitud."), 404
+        #valida que venga informada la dirección
+        if request.json.get("address") is None or request.json.get("address") == '':
+            return jsonify("La direccion no viene informada. Por favor realizar nuevamente la solicitud."), 404
+        #valida que el especialista venga informado
+        if id_profile is None or id_profile == '':
+            return jsonify("El especialista no viene informado. Por favor realizar nuevamente la solicitud."), 404
+        #valida que el cliente y el especialista sean distintos
+        if user.email == id_profile:
+            return jsonify("No puede realizar una solicitud para usted mismo."), 404
+        profile = User.query.filter_by(email=id_profile).first()
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
         requests.name_commune = request.json.get("name_commune")
@@ -413,9 +437,9 @@ def get_requests(id):
         requests.full_name_user = user.full_name
         requests.last_name_user = user.last_name
         requests.contact_phone_user = user.phone
-        requests.full_name_profile = request.json.get("full_name_profile")
-        requests.last_name_profile = request.json.get("last_name_profile")
-        requests.contact_phone_profile = request.json.get("contact_phone_profile")
+        requests.full_name_profile = profile.full_name
+        requests.last_name_profile = profile.last_name
+        requests.contact_phone_profile = profile.phone
         requests.address = request.json.get("address")
         requests.date = date
         requests.hour = hour
@@ -438,7 +462,7 @@ def get_requests(id):
             morning = Availability.morning
             afternoon = Availability.afternoon
             evening =False                        
-        #realiza update a la tabla Availability para cambiar el estado (False) del dia seleccionado 
+        #realiza un update a la tabla Availability para modificar a False el momento del dia seleccionado 
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)

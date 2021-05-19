@@ -184,6 +184,7 @@ class Requests(db.Model):
     address = db.Column(db.String(150), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     hour = db.Column(db.String(10), nullable=False)
+    observations = db.Column(db.String(200), nullable=True)
     id_user = db.Column (db.String(30), db.ForeignKey("user.id", ondelete='CASCADE'), nullable=False)
     id_profile = db.Column(db.String(30), db.ForeignKey("profile.id", ondelete='CASCADE'), nullable=False)
 
@@ -207,6 +208,7 @@ class Requests(db.Model):
         "address": self.address,  
         "date":self.date,
         "hour": self.hour,
+        "observations": self.observations,
         "id_user": self.id_user,
         "id_profile": self.id_profile
         }
