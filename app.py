@@ -406,6 +406,9 @@ def get_requests():
         request_status ="pendiente"
         hour = request.json.get("hour")
         id_profile = request.json.get("id_profile")
+        #valida que venga informada la fecha
+        if request.json.get("date") is None or request.json.get("date") == '':
+            return jsonify("La fecha no viene informada. Por favor realizar nuevamente la solicitud."), 404         
         date = request.json.get("date")
         date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
         #valida que venga informada la especialidad
