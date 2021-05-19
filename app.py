@@ -393,9 +393,10 @@ def get_ratings():
         return jsonify(ratings), 200
 
 #Crear una solicitud
-@app.route("/user/requests/<int:id>", methods=["GET", "POST"])
-def get_requests(id):
+@app.route("/user/requests", methods=["GET", "POST"])
+def get_requests():
     if request.method == "POST":
+        id = request.json.get("id")
         if id is not None:
             user = User.query.filter_by(id=id).first()
             if user is None :
