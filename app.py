@@ -264,7 +264,7 @@ def get_profile():
 def get_services_default():
     
     if request.method == "GET":
-        specialties = Specialty.query.filter_by(name_specialty="pintor").all()
+        specialties = Specialty.query.all()
         answer = []
         date = datetime.date.today() + timedelta(days=1)
         date=date.strftime("%Y-%m-%d %H:%M:%S.%S%S%S")
@@ -406,9 +406,6 @@ def get_requests():
         request_status ="pendiente"
         hour = request.json.get("hour")
         id_profile = request.json.get("id_profile")
-        #valida que venga informada la fecha
-        if request.json.get("date") is None or request.json.get("date") == '':
-            return jsonify("La fecha no viene informada. Por favor realizar nuevamente la solicitud."), 404        
         date = request.json.get("date")
         date = datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S.%f')
         #valida que venga informada la especialidad
