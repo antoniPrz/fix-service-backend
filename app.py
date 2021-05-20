@@ -135,8 +135,8 @@ def get_profile_id(id):
                 Specialty.query.filter_by(
                     id_user = (user.email)
                 ).delete(synchronize_session=False)
-                specialties = request.json.get("name_specialty")
-                #specialties = ["pintor", "carpintero", "electricista"]
+                #specialties = request.json.get("name_specialty")
+                specialties = ["pintor", "carpintero", "electricista"]
                 for name_specialty in specialties:
                     specialty=Specialty ()
                     specialty.name_specialty=name_specialty
