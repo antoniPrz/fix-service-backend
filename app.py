@@ -101,7 +101,7 @@ def get_profile_id(id):
             else:
                 return jsonify("Formato de contraseña errónea."), 400
             #Checking phone
-            if (re.search(phonereg,request.json.get('phone'))):
+            if (re.search(phonereg,str(request.json.get('phone')))):
                 user.phone = request.json.get("phone")
             else:
                 return jsonify("Formato de teléfono erróneo."), 400          
@@ -136,6 +136,7 @@ def get_profile_id(id):
                     id_user = (user.email)
                 ).delete(synchronize_session=False)
                 specialties = request.json.get("name_specialty")
+                #specialties = ["pintor", "carpintero", "electricista"]
                 for name_specialty in specialties:
                     specialty=Specialty ()
                     specialty.name_specialty=name_specialty
