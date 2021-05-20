@@ -196,7 +196,7 @@ def get_profile():
         else:
             return jsonify("Formato de RUT erróneo."), 400            
         #Checking phone
-        if (re.search(phonereg,request.json.get('phone'))):
+        if (re.search(phonereg,str(request.json.get('phone')))):
             user.phone = request.json.get("phone")
         else:
             return jsonify("Formato de teléfono erróneo."), 400
