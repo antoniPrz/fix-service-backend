@@ -492,20 +492,7 @@ def get_requests_client(id):
                 answer.append({
                             'requests':requests.serialize_all_fields()
                             })
-            return jsonify(answer), 200
-                            
-
-    if request.method == "GET":
-        if id is not None:
-            profile = Profile.query.filter_by(id=id).first()
-            if profile is None :
-                return jsonify("Usuario no existe."), 404        
-        ratings = Ratings.query.all()
-        ratings = list(map(lambda rating: rating.serialize_strict(), ratings))
-        return jsonify(ratings), 200
-
-
-
+            return jsonify(answer), 200                            
 
 
 if __name__ == "__main__":
