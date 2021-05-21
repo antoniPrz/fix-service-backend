@@ -478,6 +478,25 @@ def get_requests():
         return jsonify(requests), 200
 
 
+@app.route("/user/requests_client/<int:id>", methods=["GET", "POST"])
+def get_requests_client(id):
+    if request.method == "POST":
+        if id is not None:
+            profile = Profile.query.filter_by(id=id).first()
+            if profile is None :
+                return jsonify("Usuario no existe."), 404
+            user = User.query.filter_by(id=id).first() 
+            requests_ = Requests.query.all()
+            answer = []
+            #trae las solicitudes del cliente segun el id informado
+            for requests in requests_:
+                request_client= Requests.query.filter_by(id_user=user.email).all()                 
+                answer.append({
+                            'requests':requests.serialize_all_fields()
+                            })
+            return jsonify(answer), 200                            
+
+
 if __name__ == "__main__":
     manager.run()
 
