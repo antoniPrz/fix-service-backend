@@ -578,6 +578,33 @@ def get_acept_request():
                     return jsonify("La solicitud ya está cerrada."), 404
                 elif requests.request_status == 'cancelada':
                     return jsonify("La solicitud ya está cancelada."), 404
+                    
+
+@app.route("/user/requests_specialist/<int:id>", methods=["GET"])
+def get_requests_specialist(id):
+    if request.method == "GET":
+        #id=4
+        #id = request.json.get("id")
+        if id is None or id == '':
+            return jsonify("Usuario no viene informado."), 404
+        else:
+            if id is not None:
+                profile = Profile.query.filter_by(id=id).first()
+                if profile is None:
+                    return jsonify("Usuario no existe."), 404
+                user = User.query.filter_by(id=id).first() 
+                requests_all = Requests.query.all()
+                answer = []
+                request_client= Requests.query.filter_by(id_profile=user.email).all()
+                #trae las solicitudes del cliente segun el id informado
+                if request_client > []:
+                    for requests_all in request_client:                
+                        answer.append({
+                                    'requests':requests_all.serialize_all_fields()
+                                    })
+                    return jsonify(answer), 200   
+                else:
+                    return jsonify("Usted no tiene solicitudes creadas."), 200
 
 
 if __name__ == "__main__":
