@@ -480,8 +480,6 @@ def get_requests():
 @app.route("/user/requests_client/<int:id>", methods=["GET"])
 def get_requests_client(id):
     if request.method == "GET":
-        #id=4
-        #id = request.json.get("id")
         if id is None or id == '':
             return jsonify("Usuario no viene informado."), 404
         else:
@@ -514,25 +512,47 @@ def get_cancel_request():
         else:
             if id is not None:
                 requests = Requests.query.filter_by(id=id).first()
+                db.session.query(Availability).filter_by(
+                    id_user=requests.id_profile,date=requests.date
+                    ).first()
+                if requests.hour == 'morning':
+                    morning = True
+                    afternoon = Availability.afternoon
+                    evening = Availability.evening
+                elif requests.hour == 'afternoon':
+                    morning= Availability.morning
+                    afternoon = True
+                    evening = Availability.evening
+                elif requests.hour == 'evening':
+                    morning = Availability.morning
+                    afternoon = Availability.afternoon
+                    evening =True
+
                 if requests is None:
                     return jsonify("Solicitud no existe."), 404
                 if requests.request_status == 'pendiente' or requests.request_status == 'aceptada':
+                    #realiza un update a la tabla Requests para modificar a Cancelada el status de la solicitud 
                     db.session.query(Requests).filter_by(
                         id=id
                         ).update({Requests.request_status:request_cancel}, synchronize_session = False)
+                    #realiza un update a la tabla Availability para modificar a True el momento del dia cancelado 
+                    db.session.query(Availability).filter_by(
+                        id_user=requests.id_profile,date=requests.date
+                        ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
                     db.session.commit()
                     return jsonify("Su solicitud ha sido cancelada."), 200
-                elif requests.request_status == 'cerrada':
-                    return jsonify("La solicitud ya está cerrada."), 404
+                elif requests.request_status == 'resuelta':
+                    return jsonify("La solicitud ya está resuelta."), 404
                 elif requests.request_status == 'cancelada':
                     return jsonify("La solicitud ya está cancelada."), 404
 
 
 @app.route("/user/close_request", methods=['PUT'])
+#@jwt_required(optional=True)
 def get_close_request():
     if request.method == 'PUT':         
         id = request.json.get("id")
-        request_close ="cerrada"
+        request_close ="resuelta"
         if id is None or id == '':
             return jsonify("Solicitud no viene informada."), 404
         else:
@@ -543,13 +563,14 @@ def get_close_request():
                 if requests.request_status == 'pendiente':
                     return jsonify("Las solicitudes pendientes solo se pueden aceptar o cancelar."), 404
                 elif requests.request_status == 'aceptada':
+                #realiza un update a la tabla Requests para modificar a Resuelta el status de la solicitud     
                     db.session.query(Requests).filter_by(
                         id=id
                         ).update({Requests.request_status:request_close}, synchronize_session = False)
                     db.session.commit()
-                    return jsonify("Su solicitud ha sido cerrada."), 200
-                elif requests.request_status == 'cerrada':
-                    return jsonify("La solicitud ya está cerrada."), 404
+                    return jsonify("Su solicitud ha sido resuelta."), 200
+                elif requests.request_status == 'resuelta':
+                    return jsonify("La solicitud ya está resuelta."), 404
                 elif requests.request_status == 'cancelada':
                     return jsonify("La solicitud ya está cancelada."), 404
 
@@ -574,8 +595,8 @@ def get_acept_request():
                     return jsonify("Su solicitud ha sido aceptada."), 200
                 elif requests.request_status == 'aceptada':
                     return jsonify("Las solicitudes ya está aceptada."), 404                    
-                elif requests.request_status == 'cerrada':
-                    return jsonify("La solicitud ya está cerrada."), 404
+                elif requests.request_status == 'resuelta':
+                    return jsonify("La solicitud ya está resuelta."), 404
                 elif requests.request_status == 'cancelada':
                     return jsonify("La solicitud ya está cancelada."), 404
                     
@@ -583,8 +604,6 @@ def get_acept_request():
 @app.route("/user/requests_specialist/<int:id>", methods=["GET"])
 def get_requests_specialist(id):
     if request.method == "GET":
-        #id=4
-        #id = request.json.get("id")
         if id is None or id == '':
             return jsonify("Usuario no viene informado."), 404
         else:
