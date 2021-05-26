@@ -470,7 +470,8 @@ def get_requests():
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
         db.session.commit()
-        return jsonify({'requests':requests.serialize_all_fields()}), 200
+        #return jsonify("Solicitud realizada.",{'requests':requests.serialize_all_fields()}), 200
+        return jsonify("Su solicitud ha sido enviada al especialista."), 200
 
     if request.method == "GET":
         requests = Requests.query.all()
