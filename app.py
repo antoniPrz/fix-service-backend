@@ -13,13 +13,14 @@ import datetime
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
+key = os.getenv("API_JWT_KEY")
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASEDIR, 'te_ayudo.db')
 app.config["DEBUG"] = True
 app.config["ENV"] = "development"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = 'secret-key'
-app.config["JWT_SECRET_KEY"] = 'encrypt'
+app.config["JWT_SECRET_KEY"] = key
 
 db.init_app(app)
 Migrate(app, db)
