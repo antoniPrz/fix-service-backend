@@ -433,6 +433,14 @@ def get_requests():
         #valida que el cliente y el especialista sean distintos
         if user.email == id_profile:
             return jsonify("No puede realizar una solicitud para usted mismo."), 404
+        #validar el horario si ya está seleccionado
+        validate_time=Availability.query.filter_by(id_user=id_profile,date=request.json.get("date")).first()
+        if hour == 'morning' and validate_time.morning == False:
+            return jsonify("El horario 08:00 - 11:00 ya está tomado por el especialista. Por favor elija otro horario."), 404
+        elif hour == 'afternoon' and validate_time.afternoon == False:
+            return jsonify("El horario 11:00 - 14:00 ya está tomado por el especialista. Por favor elija otro horario."), 404
+        elif hour == 'evening' and validate_time.evening == False:
+            return jsonify("El horario 14:00 - 17:00 ya está tomado por el especialista. Por favor elija otro horario."), 404            
         profile = User.query.filter_by(email=id_profile).first()
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
@@ -449,7 +457,7 @@ def get_requests():
         requests.hour = hour
         requests.id_user = user.email
         requests.id_profile = id_profile
-        db.session.add(requests)
+        db.session.add(requests)                 
         #busca el registro en Availability segun el especialista y la fecha
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
@@ -471,8 +479,7 @@ def get_requests():
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
         db.session.commit()
-        #return jsonify("Solicitud realizada.",{'requests':requests.serialize_all_fields()}), 200
-        return jsonify("Su solicitud ha sido enviada al especialista."), 200
+        return jsonify({'requests':requests.serialize_all_fields()}), 200
 
     if request.method == "GET":
         requests = Requests.query.all()
