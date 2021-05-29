@@ -119,11 +119,22 @@ def get_profile_id(id):
                 return jsonify("Debe informar su comuna de residencia."), 400  
             if user.address == "":
                 return jsonify("Debe informar su dirección."), 400                               
-
-            if profile.role != "client":
-                email_client= profile.id_communes
+            #busca en disponibilidad si existe el usuario
+            #para cliente que quiere ser especialista le crea la disponibilidad al editar
+            availability = Availability.query.filter_by(id_user=profile.id_user).first()
+            if profile.role != "client":   
+                if availability is None:                
+                    for day in range(15):
+                        availability = Availability()
+                        date = datetime.date.today () + timedelta(days=day)
+                        availability.date=date
+                        availability.morning = True
+                        availability.afternoon = True
+                        availability.evening = True
+                        availability.id_user = profile.id_user
+                        db.session.add(availability)
                 Communes.query.filter_by(
-                    email = (email_client)
+                    email = (user.email)
                 ).delete(synchronize_session=False)         
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
