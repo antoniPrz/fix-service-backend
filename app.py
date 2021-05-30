@@ -119,11 +119,22 @@ def get_profile_id(id):
                 return jsonify("Debe informar su comuna de residencia."), 400  
             if user.address == "":
                 return jsonify("Debe informar su dirección."), 400                               
-
-            if profile.role != "client":
-                email_client= profile.id_communes
+            #busca en disponibilidad si existe el usuario
+            #para cliente que quiere ser especialista le crea la disponibilidad al editar
+            availability = Availability.query.filter_by(id_user=profile.id_user).first()
+            if profile.role != "client":   
+                if availability is None:                
+                    for day in range(15):
+                        availability = Availability()
+                        date = datetime.date.today () + timedelta(days=day)
+                        availability.date=date
+                        availability.morning = True
+                        availability.afternoon = True
+                        availability.evening = True
+                        availability.id_user = profile.id_user
+                        db.session.add(availability)
                 Communes.query.filter_by(
-                    email = (email_client)
+                    email = (user.email)
                 ).delete(synchronize_session=False)         
                 profile.experience = request.json.get("experience")
                 attetion_communes = request.json.get("communes")
@@ -433,6 +444,14 @@ def get_requests():
         #valida que el cliente y el especialista sean distintos
         if user.email == id_profile:
             return jsonify("No puede realizar una solicitud para usted mismo."), 404
+        #validar el horario si ya está seleccionado
+        validate_time=Availability.query.filter_by(id_user=id_profile,date=request.json.get("date")).first()
+        if hour == 'morning' and validate_time.morning == False:
+            return jsonify("El horario 08:00 - 11:00 ya está tomado por el especialista. Por favor elija otro horario."), 404
+        elif hour == 'afternoon' and validate_time.afternoon == False:
+            return jsonify("El horario 11:00 - 14:00 ya está tomado por el especialista. Por favor elija otro horario."), 404
+        elif hour == 'evening' and validate_time.evening == False:
+            return jsonify("El horario 14:00 - 17:00 ya está tomado por el especialista. Por favor elija otro horario."), 404            
         profile = User.query.filter_by(email=id_profile).first()
         requests = Requests()
         requests.name_specialty = request.json.get("name_specialty")
@@ -449,7 +468,7 @@ def get_requests():
         requests.hour = hour
         requests.id_user = user.email
         requests.id_profile = id_profile
-        db.session.add(requests)
+        db.session.add(requests)                 
         #busca el registro en Availability segun el especialista y la fecha
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
