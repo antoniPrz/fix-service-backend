@@ -155,6 +155,10 @@ def get_profile_id(id):
                     specialty.name_specialty=name_specialty
                     specialty.id_user = user.email
                     db.session.add(specialty)
+                
+                db.session.query(Profile).filter_by(
+                    id=id
+                    ).update({Profile.id_communes:user.email}, synchronize_session = False)
 
             db.session.commit()
             return jsonify("Su perfil ha sido actualizado."), 200
