@@ -67,6 +67,10 @@ def login():
     user = User.query.filter_by(email=email).first()
     profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
     
+    if user is None:             
+        return jsonify("Usuario no existe."), 404
+    commune_names=[]
+    name_specialty=[]
     if profile.role != "client":
         communes = Communes.query.filter_by(email=email).all()
         commune_names=[]
@@ -78,8 +82,6 @@ def login():
         for specialty in specialists:
             name_specialty.append(specialty.name_specialty)
 
-    if user is None:             
-        return jsonify("Usuario no existe."), 404
     if bcrypt.check_password_hash(user.password, password): #retorna booleano
         access_token =create_access_token(identity=email)
         return jsonify({
@@ -136,6 +138,8 @@ def get_profile_id(id):
             #busca en disponibilidad si existe el usuario
             #para cliente que quiere ser especialista le crea la disponibilidad al editar
             availability = Availability.query.filter_by(id_user=profile.id_user).first()
+            attetion_communes=[]
+            specialties=[]
             if profile.role != "client":   
                 if availability is None:                
                     for day in range(15):
