@@ -66,6 +66,17 @@ def login():
     #valida que el usario exista    
     user = User.query.filter_by(email=email).first()
     profile = Profile.query.filter_by(id_user=request.json.get("email")).first()
+    
+    if profile.role != "client":
+        communes = Communes.query.filter_by(email=email).all()
+        commune_names=[]
+        for commune in communes:
+            commune_names.append(commune.name_commune)
+        
+        specialists=Specialty.query.filter_by(id_user=email).all()
+        name_specialty=[]
+        for specialty in specialists:
+            name_specialty.append(specialty.name_specialty)
 
     if user is None:             
         return jsonify("Usuario no existe."), 404
@@ -74,7 +85,9 @@ def login():
         return jsonify({
             "user": user.serialize_all_fields(),     
             "profile" : profile.serialize_all_fields(),
-            "access_token": access_token
+            "access_token": access_token,
+            "communes": commune_names,
+            "specialists": name_specialty
         }),200
     else:
         return jsonify("Ha ingresado mal la contraseña."), 400
@@ -161,7 +174,15 @@ def get_profile_id(id):
                     ).update({Profile.id_communes:user.email}, synchronize_session = False)
 
             db.session.commit()
-            return jsonify("Su perfil ha sido actualizado."), 200
+            if bcrypt.check_password_hash(user.password,request.json.get("password")): #retorna booleano
+                access_token =create_access_token(identity=user.email)
+                return jsonify({
+                    "user": user.serialize_all_fields(),     
+                    "profile" : profile.serialize_all_fields(),
+                    "access_token": access_token,
+                    "communes": attetion_communes,
+                    "specialists": specialties
+                }),200
         else:
             return jsonify("Usuario no existe."), 404
 
