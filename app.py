@@ -1,7 +1,7 @@
 import os, re
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import Migrate
 from flask_script import Manager
 from flask_cors import CORS
 from models import db, Services, Profile, Communes, Availability, Ratings, User, Requests, Specialty
@@ -10,6 +10,7 @@ from datetime import date, datetime, time, timedelta
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from sqlalchemy.sql import text
 import datetime
+from flask_mail import Mail, Message
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,14 +22,28 @@ app.config["ENV"] = "development"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = 'secret-key'
 app.config["JWT_SECRET_KEY"] = key
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'teayudogeeks@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ymagqkgwnsecmvnt'
 
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
-manager.add_command("db", MigrateCommand)
+#manager.add_command("db", MigrateCommand)
 CORS(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
+mail = Mail(app)
+
+
+@app.route('/mail')
+def send_mail():
+    msg = Message("Hola un gusto saludarte", sender="teayudogeeks@gmail.com", recipients=["atrujilloembry@gmail.com"])
+    msg.body ="Esto es una prueba para revisar que llega el mail"
+    mail.send(msg)
+    return "El correo se ha enviado exitosamente"
 
 
 @app.route("/")

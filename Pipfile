@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+flask = "==1.1.4"
 flask-sqlalchemy = "*"
 flask-cors = "*"
 flask-script = "*"
@@ -14,6 +14,7 @@ flask-bcrypt = "*"
 datetime = "*"
 flask-wtf = "*"
 email-validator = "*"
+flask-mail = "*"
 
 [dev-packages]
 
