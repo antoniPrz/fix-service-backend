@@ -40,10 +40,11 @@ mail = Mail(app)
 
 @app.route('/mail')
 def send_mail():
-    msg = Message("Hola un gusto saludarte", sender="teayudogeeks@gmail.com", recipients=["atrujilloembry@gmail.com"])
-    msg.body ="Esto es una prueba para revisar que llega el mail"
+    msg = Message("Hola un gusto saludarte", sender="teayudogeeks@gmail.com")
+    msg.recipients = request.json.get("recipients")
+    msg.body ="Tenemos el agrado de informar que su cuenta se ha agregado en la aplicación 'TeAyudo?'"
     mail.send(msg)
-    return "El correo se ha enviado exitosamente"
+    return "El correo se ha enviado exitosamente."
 
 
 @app.route("/")
