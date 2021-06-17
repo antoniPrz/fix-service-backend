@@ -521,7 +521,11 @@ def get_requests():
         db.session.query(Availability).filter_by(
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
-        db.session.commit()
+        #Envia correo al especialista de la solicitud generada
+        msg = Message("Hola se te ha agendado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[id_profile])
+        msg.body =("Solicitud generada para la especialidad: " + request.json.get("name_specialty") + " Cliente: " +user.full_name+ " " +user.last_name + " Contacto: " +str(user.phone)+ " Fecha: " +str(date)+ " " +hour+ ". Puede iniciar su sesión aquí: ")
+        mail.send(msg)
+        #db.session.commit()
         return jsonify({'requests':requests.serialize_all_fields()}), 200
 
     if request.method == "GET":
