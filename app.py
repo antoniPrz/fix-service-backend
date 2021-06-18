@@ -506,14 +506,17 @@ def get_requests():
             id_user=id_profile,date=request.json.get("date")
             ).first()
         if hour == 'morning':
+            hourformat= "08:00 - 11:00"
             morning = False
             afternoon = Availability.afternoon
             evening = Availability.evening
         elif hour == 'afternoon':
+            hourformat= "11:00 - 14:00"
             morning= Availability.morning
             afternoon = False
             evening = Availability.evening
         elif hour == 'evening':
+            hourformat= "14:00 - 17:00"
             morning = Availability.morning
             afternoon = Availability.afternoon
             evening =False                        
@@ -522,10 +525,11 @@ def get_requests():
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
         #Envia correo al especialista de la solicitud generada
-        msg = Message("Hola se te ha agendado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[id_profile])
-        msg.body =("Solicitud generada para la especialidad: " + request.json.get("name_specialty") + " Cliente: " +user.full_name+ " " +user.last_name + " Contacto: " +str(user.phone)+ " Fecha: " +str(date)+ " " +hour+ ". Puede iniciar su sesión aquí: ")
+        msg = Message("Hola " + profile.full_name+ " " + profile.last_name + " se te ha agendado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[id_profile])
+        msg.body =("Se ha generado una solicitud para la especialidad: " + request.json.get("name_specialty") + ". Cliente: " +user.full_name+ " " +user.last_name + ". Contacto: " +str(user.phone)+ ". Fecha: " +str(date)+ ". Horario: " +hourformat+ ".")
+        #msg.html= "<button to='/Login' className='btn btn-block btn-ta1 text-white' href='#' role='button'>Ingresa Aquí</button>"
         mail.send(msg)
-        #db.session.commit()
+        db.session.commit()
         return jsonify({'requests':requests.serialize_all_fields()}), 200
 
     if request.method == "GET":
