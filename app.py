@@ -525,8 +525,8 @@ def get_requests():
             id_user=id_profile,date=request.json.get("date")
             ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
         #Envia correo al especialista de la solicitud generada
-        msg = Message("Hola " + profile.full_name+ " " + profile.last_name + " se te ha agendado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[id_profile])
-        msg.body =("Se ha generado una solicitud para la especialidad: " + request.json.get("name_specialty") + ". Cliente: " +user.full_name+ " " +user.last_name + ". Contacto: " +str(user.phone)+ ". Fecha: " +str(date)+ ". Horario: " +hourformat+ ".")
+        msg = Message("Hola " + profile.full_name+ " " + profile.last_name + " se ha Agendado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[id_profile])
+        msg.body =("Tenemos el agrado de comuniarle que se ha generado una solicitud para la especialidad: " + request.json.get("name_specialty") + ". Cliente: " +user.full_name+ " " +user.last_name + ". Contacto: " +str(user.phone)+ ". Fecha: " +str(date)+ ". Horario: " +hourformat+ ".")
         #msg.html= "<button to='/Login' className='btn btn-block btn-ta1 text-white' href='#' role='button'>Ingresa Aquí</button>"
         mail.send(msg)
         db.session.commit()
@@ -601,7 +601,11 @@ def get_cancel_request():
                     db.session.query(Availability).filter_by(
                         id_user=requests.id_profile,date=requests.date
                         ).update({Availability.morning:morning,Availability.afternoon:afternoon,Availability.evening:evening}, synchronize_session = False)
-                    db.session.commit()
+                    #Envia correo al especialista de la solicitud generada
+                    msg = Message("Hola " + requests.full_name_profile+ " " + requests.last_name_profile + " se ha Cancelado una solicitud en 'TeAyudo?'", sender="teayudogeeks@gmail.com", recipients=[requests.id_profile])
+                    msg.body =("Buen día. 'TeAyudo?' informa que se ha Cancelado una solicitud para la especialidad: " + requests.name_specialty + ". Cliente: " +requests.full_name_user+ " " +requests.last_name_user + ". Contacto: " +str(requests.contact_phone_user)+ ". Fecha: " +str(requests.date)+ ".")
+                    mail.send(msg)                    
+                    #db.session.commit()
                     return jsonify("Su solicitud ha sido cancelada."), 200
                 elif requests.request_status == 'resuelta':
                     return jsonify("La solicitud ya está resuelta."), 404
